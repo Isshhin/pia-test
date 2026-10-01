@@ -178,6 +178,25 @@
             animation: pulseTimer 0.5s infinite alternate;
         }
 
+
+        /* TESTING ONLY: live ML profile badge. Set SHOW_ML_PROFILE_DEBUG=false
+           in the script before the production deployment. */
+        .ml-profile-debug-badge {
+            background: #fff;
+            color: var(--ink);
+            border: 3px solid var(--ink);
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            white-space: nowrap;
+            box-shadow: 3px 3px 0 var(--ink);
+        }
+
+        .ml-profile-debug-badge[data-profile="struggling"] { background: #FFE1E5; }
+        .ml-profile-debug-badge[data-profile="average"] { background: #FFF3A6; }
+        .ml-profile-debug-badge[data-profile="outstanding"] { background: #CDF3DD; }
+
         @keyframes pulseTimer {
             0% { transform: scale(1) rotate(-1deg); }
             100% { transform: scale(1.07) rotate(1deg); }
@@ -799,11 +818,9 @@
 
         .q-btn {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            gap: 6px;
             width: 100%;
-            padding: 7px 10px;
+            padding: 9px 11px;
             margin-bottom: 10px;
             background: #fff;
             border: 2.5px solid var(--ink);
@@ -813,15 +830,20 @@
             color: var(--ink);
             font-weight: 700;
             text-align: left;
+            cursor: pointer;
+            transition: transform 0.12s, box-shadow 0.12s, background 0.12s;
         }
 
         .q-btn.active { background: var(--ok-tint); }
+        .q-btn:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--ok); }
+        .q-btn:active { transform: translate(1px, 1px); box-shadow: 2px 2px 0 var(--ok); }
+        .q-btn:focus-visible { outline: 3px dashed var(--ink); outline-offset: 3px; }
 
         .q-btn-equation {
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            max-width: 72%;
+            max-width: 100%;
             font-weight: 600;
         }
 
@@ -895,6 +917,119 @@
             background: rgba(255, 254, 250, 0.9);
             border: 2.5px dashed rgba(27, 26, 46, 0.4);
             border-radius: 12px;
+        }
+
+        /* ---------- Solved-question inline workspace preview ---------- */
+        .center-panel.solved-preview-mode .problem-header-block {
+            background:
+                radial-gradient(ellipse at 18% 12%, rgba(255,255,255,0.16), transparent 55%),
+                radial-gradient(ellipse at 88% 90%, rgba(255,255,255,0.10), transparent 50%),
+                #17633f;
+        }
+
+        .center-panel.solved-preview-mode .problem-label {
+            color: #CBFF31;
+        }
+
+        .workspace-preview-toolbar {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 4px 2px 2px;
+            margin-bottom: 2px;
+        }
+
+        .workspace-preview-heading {
+            font-family: var(--display);
+            font-size: 1.15rem;
+            color: var(--ink);
+        }
+
+        .workspace-preview-back {
+            border: 3px solid var(--ink);
+            border-radius: 999px;
+            background: var(--hl);
+            color: var(--ink);
+            padding: 7px 13px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 3px 3px 0 var(--ink);
+            transition: transform .12s, box-shadow .12s;
+        }
+
+        .workspace-preview-back:hover {
+            transform: translate(-2px,-2px);
+            box-shadow: 5px 5px 0 var(--ink);
+        }
+
+        .workspace-preview-back:active {
+            transform: translate(2px,2px);
+            box-shadow: 1px 1px 0 var(--ink);
+        }
+
+
+        .workspace-preview-step {
+            position: relative;
+            width: 100%;
+            border: 3px solid var(--ink);
+            border-radius: var(--card-radius);
+            padding: 14px 16px 14px 46px;
+            background: var(--ok-tint);
+            box-shadow: 5px 5px 0 var(--ink);
+            overflow: hidden;
+            animation: popIn .28s ease-out;
+        }
+
+        .workspace-preview-step::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 28px;
+            background-color: var(--ok);
+            background-image:
+                repeating-linear-gradient(to bottom, transparent 0 38px, var(--ink) 38px 40px),
+                repeating-linear-gradient(to bottom, transparent 0 6px, var(--ink) 6px 8px);
+            background-size: 20px 100%, 11px 100%;
+            background-position: right top, right top;
+            background-repeat: no-repeat;
+            border-right: 3px solid var(--ink);
+        }
+
+        .workspace-preview-step-title {
+            font-family: var(--display);
+            font-size: 1.05rem;
+            margin-bottom: 8px;
+            color: var(--ink);
+        }
+
+        .workspace-preview-answer-label {
+            color: #46437a;
+            font-size: .82rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .workspace-preview-answer {
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            padding: 9px 13px;
+            border: 3px solid var(--ok-deep);
+            border-radius: 12px;
+            background: #CDF3DD;
+            color: var(--ok-deep);
+            font-size: 1.12rem;
+            font-weight: 700;
+            word-break: break-word;
+        }
+
+        .q-btn.previewing {
+            background: #FFF3A6;
+            box-shadow: 3px 3px 0 var(--hl);
         }
 
         /* ---------- Overlays & modals ---------- */
@@ -1445,6 +1580,8 @@
             <div class="timer-badge" id="timer-badge">
                 <span id="timer-display">--:--</span>
             </div>
+            <!-- TESTING ONLY: hide for production by setting SHOW_ML_PROFILE_DEBUG=false -->
+            <div class="ml-profile-debug-badge" id="ml-profile-debug-badge" data-profile="average">ML TEST · P2 Average</div>
             <button class="restart-btn" onclick="startOver()">Start Over</button>
             <div class="student-badge" id="student-badge" style="display: none;">
                 <span id="student-badge-name">Student</span>
@@ -1519,6 +1656,7 @@
 
     </div>
 
+    <!-- Solved Question Preview -->
     <!-- Time Limit Modal Popup -->
     <div id="time-limit-modal" class="overlay-screen" style="display: none;">
         <div class="time-modal-card">
@@ -2110,6 +2248,13 @@
         }
 
         // --- PERSONAS CONFIGURATION ---
+        // Dialogue is organized by OCEAN persona first, then by the student's
+        // current learning profile. To add more dialogue later, simply add a
+        // new quoted line inside the matching array below.
+        //
+        // Profile 1 = struggling   -> more support and scaffolding
+        // Profile 2 = average      -> balanced guidance (default)
+        // Profile 3 = outstanding  -> more independence and challenge
         const PERSONA_CONFIG = {
             openness: {
                 name: "Explorer Mentor",
@@ -2119,24 +2264,83 @@
                     sad: "Personas/Openness/sad.png",
                     thinking: "Personas/Openness/default.png"
                 },
-                greet: [
-                    "Hey explorer! Let's discover fresh ways to crack this problem step by step!",
-                    "Math is just a puzzle waiting for us to unravel. Ready to explore?"
-                ],
-                correct: [
-                    "Brilliant insight! Your creative approach solved this step perfectly!",
-                    "Aha! That's the exact logic we were searching for. Brilliant job!"
-                ],
-                wrong: [
-                    "An interesting attempt! Let's look at this step from a different angle.",
-                    "Not quite, but every mistake opens up a new perspective! Let's re-examine."
-                ],
-                hint: [
-                    "Here's a clue to spark your imagination:",
-                    "Think about breaking the number down step by step:"
-                ],
-                mastery: "Amazing achievement! You have mastered this topic. Choose where you would like to continue."
+                profiles: {
+                    struggling: {
+                        greet: [
+                            "Let's explore this carefully, one small step at a time.",
+                            "No rush, explorer. We'll uncover this problem piece by piece.",
+                            "This one may look tricky, but every puzzle becomes clearer when we inspect one clue at a time."
+                        ],
+                        correct: [
+                            "Great discovery! You found the right step. Let's build on it.",
+                            "Nice work! That idea opened the right path forward.",
+                            "You found an important clue. Keep following that same reasoning."
+                        ],
+                        wrong: [
+                            "Interesting try! Let's explore just one part of the problem first.",
+                            "Not quite yet. Try looking at the numbers from a different angle.",
+                            "That path did not work this time. Let's inspect the clue that matters most."
+                        ],
+                        hint: [
+                            "Let's uncover one clue together:",
+                            "Focus on one small part first:",
+                            "Try exploring this clue before solving the whole problem:"
+                        ],
+                        mastery: [
+                            "Look how far you've explored! Your problem-solving path is getting stronger.",
+                            "Excellent progress! You kept exploring until the pattern became clear."
+                        ]
+                    },
+                    average: {
+                        greet: [
+                            "Hey explorer! Let's discover fresh ways to crack this problem step by step!",
+                            "Math is just a puzzle waiting for us to unravel. Ready to explore?"
+                        ],
+                        correct: [
+                            "Brilliant insight! Your creative approach solved this step perfectly!",
+                            "Aha! That's the exact logic we were searching for. Brilliant job!"
+                        ],
+                        wrong: [
+                            "An interesting attempt! Let's look at this step from a different angle.",
+                            "Not quite, but every mistake opens up a new perspective! Let's re-examine."
+                        ],
+                        hint: [
+                            "Here's a clue to spark your imagination:",
+                            "Think about breaking the number down step by step:"
+                        ],
+                        mastery: [
+                            "Amazing achievement! You have mastered this topic. Choose where you would like to continue."
+                        ]
+                    },
+                    outstanding: {
+                        greet: [
+                            "New challenge ahead, explorer. See if you can spot the pattern quickly.",
+                            "Let's test your insight. Try finding the most efficient path through this problem.",
+                            "Ready for a sharper puzzle? Look for the relationship before you calculate."
+                        ],
+                        correct: [
+                            "Excellent insight! You recognized the pattern quickly.",
+                            "Strong reasoning. You found an efficient route to the answer.",
+                            "Sharp discovery! You connected the clues with very little guidance."
+                        ],
+                        wrong: [
+                            "Interesting result. See if you can identify exactly where the reasoning changed direction.",
+                            "That was a strong attempt. Revisit the pattern and find the hidden slip.",
+                            "Challenge accepted. Try diagnosing the error before changing your strategy."
+                        ],
+                        hint: [
+                            "A small clue should be enough:",
+                            "Look for a more efficient relationship between the values:",
+                            "Use this clue, then see if you can finish the rest independently:"
+                        ],
+                        mastery: [
+                            "Excellent exploration! You're ready to investigate a more demanding challenge.",
+                            "Outstanding reasoning. Keep looking for elegant and efficient solutions."
+                        ]
+                    }
+                }
             },
+
             conscientiousness: {
                 name: "Structured Guide",
                 images: { 
@@ -2145,24 +2349,83 @@
                     sad: "Personas/Conscientiousness/sad.png",
                     thinking: "Personas/Conscientiousness/default.png"
                 },
-                greet: [
-                    "Precision mode active. Let's work methodically through each problem step.",
-                    "Welcome! Double-check each detail, and we will achieve 100% accuracy."
-                ],
-                correct: [
-                    "Exact calculation! You executed this step with absolute precision.",
-                    "Structured and accurate. Perfect work on this computation!"
-                ],
-                wrong: [
-                    "Discrepancy detected in your answer. Verify your calculations and re-submit.",
-                    "There is a small arithmetic error in this step. Double-check your numbers carefully."
-                ],
-                hint: [
-                    "Systematic Hint:",
-                    "Follow the exact sequence carefully:"
-                ],
-                mastery: "Mastery threshold reached. All requirements are met. Choose where you would like to continue."
+                profiles: {
+                    struggling: {
+                        greet: [
+                            "We'll handle this carefully. Focus on one step, verify it, then move to the next.",
+                            "Let's organize the problem first, then solve each part in order.",
+                            "Take your time. A clear sequence will make this problem easier to manage."
+                        ],
+                        correct: [
+                            "Good. That step is accurate. Keep following the same organized process.",
+                            "Correct calculation. Your careful checking is working.",
+                            "Well done. One verified step at a time is getting you closer to the solution."
+                        ],
+                        wrong: [
+                            "Let's slow down and verify the first operation before continuing.",
+                            "There is an error here. Recheck each value in order and try again.",
+                            "Review the sequence carefully. Fix one step before moving to the next."
+                        ],
+                        hint: [
+                            "Let's organize the next move:",
+                            "Use this step-by-step checkpoint:",
+                            "Focus on this part before continuing:"
+                        ],
+                        mastery: [
+                            "Your careful process has improved. You are solving with more consistency now.",
+                            "Excellent progress. Your organized approach is producing reliable results."
+                        ]
+                    },
+                    average: {
+                        greet: [
+                            "Precision mode active. Let's work methodically through each problem step.",
+                            "Welcome! Double-check each detail, and we will achieve 100% accuracy."
+                        ],
+                        correct: [
+                            "Exact calculation! You executed this step with absolute precision.",
+                            "Structured and accurate. Perfect work on this computation!"
+                        ],
+                        wrong: [
+                            "Discrepancy detected in your answer. Verify your calculations and re-submit.",
+                            "There is a small arithmetic error in this step. Double-check your numbers carefully."
+                        ],
+                        hint: [
+                            "Systematic Hint:",
+                            "Follow the exact sequence carefully:"
+                        ],
+                        mastery: [
+                            "Mastery threshold reached. All requirements are met. Choose where you would like to continue."
+                        ]
+                    },
+                    outstanding: {
+                        greet: [
+                            "Let's solve this with precision and efficiency. Plan the sequence before calculating.",
+                            "Your goal is not only accuracy today, but a clean and efficient solution path.",
+                            "Review the structure first, then execute the shortest reliable sequence."
+                        ],
+                        correct: [
+                            "Precise and efficient. That step was executed cleanly.",
+                            "Excellent control of the process. Your reasoning is both accurate and organized.",
+                            "Verified and correct. You maintained precision without unnecessary steps."
+                        ],
+                        wrong: [
+                            "Recheck the sequence and identify the exact point where the calculation diverged.",
+                            "Your structure is close. Audit each operation and locate the single inconsistency.",
+                            "Verify the inputs before changing the method; the issue may be one precise detail."
+                        ],
+                        hint: [
+                            "Use this checkpoint, then complete the remaining sequence independently:",
+                            "One precise clue:",
+                            "Verify this relationship before proceeding:"
+                        ],
+                        mastery: [
+                            "Excellent precision. You are ready for a more complex sequence of reasoning.",
+                            "Outstanding consistency. Your method is accurate, organized, and efficient."
+                        ]
+                    }
+                }
             },
+
             extraversion: {
                 name: "Energetic Coach",
                 images: { 
@@ -2171,24 +2434,83 @@
                     sad: "Personas/Extraverted/sad.png",
                     thinking: "Personas/Extraverted/default.png"
                 },
-                greet: [
-                    "Hey hey! Super pumped to solve these awesome math challenges with you today!",
-                    "Let me hear you say math! We're gonna crush these questions together!"
-                ],
-                correct: [
-                    "BOOM! You nailed it! Keep that high energy going!",
-                    "YESSS! That's what I'm talking about! Total genius power!"
-                ],
-                wrong: [
-                    "No worries at all! Shake it off and let me see you smash it on the next try!",
-                    "Almost there! Put your game face on, try once more!"
-                ],
-                hint: [
-                    "Pro-tip coming through!",
-                    "You got this! Here's a power hint:"
-                ],
-                mastery: "Mastery unlocked. You completed this topic. Choose where you would like to continue."
+                profiles: {
+                    struggling: {
+                        greet: [
+                            "We're doing this together! Let's take one small win at a time!",
+                            "You got this! We'll break the problem down and build momentum step by step!",
+                            "Game on! Start with one part, then we'll power through the rest together!"
+                        ],
+                        correct: [
+                            "YES! That's it! One strong step down—keep the momentum going!",
+                            "Nice one! You got that step right. Let's carry that energy forward!",
+                            "There we go! That correct step is exactly the boost we needed!"
+                        ],
+                        wrong: [
+                            "Still in the game! Let's tackle one smaller piece and come right back at it!",
+                            "Almost! Shake that one off, check the numbers, and give it another shot!",
+                            "No stop signs here! Let's find the tiny slip and keep moving!"
+                        ],
+                        hint: [
+                            "Quick boost—try this clue:",
+                            "Here's a power-up for the next step:",
+                            "Let's get some momentum with this hint:"
+                        ],
+                        mastery: [
+                            "Look at that progress! You kept pushing and built real momentum!",
+                            "Awesome comeback! Your effort turned into stronger problem solving."
+                        ]
+                    },
+                    average: {
+                        greet: [
+                            "Hey hey! Super pumped to solve these awesome math challenges with you today!",
+                            "Let me hear you say math! We're gonna crush these questions together!"
+                        ],
+                        correct: [
+                            "BOOM! You nailed it! Keep that high energy going!",
+                            "YESSS! That's what I'm talking about! Total genius power!"
+                        ],
+                        wrong: [
+                            "No worries at all! Shake it off and let me see you smash it on the next try!",
+                            "Almost there! Put your game face on, try once more!"
+                        ],
+                        hint: [
+                            "Pro-tip coming through!",
+                            "You got this! Here's a power hint:"
+                        ],
+                        mastery: [
+                            "Mastery unlocked. You completed this topic. Choose where you would like to continue."
+                        ]
+                    },
+                    outstanding: {
+                        greet: [
+                            "Big challenge incoming! Let's see how fast you can spot the winning strategy!",
+                            "You're on a roll—time to push for a sharp, efficient solution!",
+                            "Bring the energy! Try solving this with fewer clues and maximum focus!"
+                        ],
+                        correct: [
+                            "BOOM—fast and accurate! That's some serious math momentum!",
+                            "YES! Clean reasoning and a strong finish. Keep that streak alive!",
+                            "That's championship-level focus! You solved it with confidence and control!"
+                        ],
+                        wrong: [
+                            "Good challenge! Find the slip, fix it, and jump right back in!",
+                            "So close! Diagnose that one mistake and keep the streak moving!",
+                            "You've got the skills—spot the mismatch and hit it again!"
+                        ],
+                        hint: [
+                            "Tiny power hint—see what you can do with just this:",
+                            "One clue, then you're taking it from here:",
+                            "Quick nudge—finish the rest with your own strategy:"
+                        ],
+                        mastery: [
+                            "Outstanding performance! You're ready to take on a bigger challenge!",
+                            "You crushed that level with speed and accuracy. Keep the momentum going!"
+                        ]
+                    }
+                }
             },
+
             agreeableness: {
                 name: "Supportive Pal",
                 images: { 
@@ -2197,24 +2519,83 @@
                     sad: "Personas/Agreeableness/sad.png",
                     thinking: "Personas/Agreeableness/test.gif"
                 },
-                greet: [
-                    "Hello my friend! I'm right here beside you, so take all the time you need.",
-                    "Don't worry about making mistakes—we'll support each other every step of the way!"
-                ],
-                correct: [
-                    "Wonderful job! I'm so proud of how hard you're working!",
-                    "You did so well! Your effort is truly paying off, keep going!"
-                ],
-                wrong: [
-                    "It's completely okay! Math can be tricky, so let's try it again together gently.",
-                    "Take a deep breath! Everyone makes mistakes, let's take a peaceful second look."
-                ],
-                hint: [
-                    "Here is a gentle hint for you:",
-                    "Don't stress! Here is a helpful tip:"
-                ],
-                mastery: "You achieved mastery. Choose where you would like to continue."
+                profiles: {
+                    struggling: {
+                        greet: [
+                            "I'm right here with you. We'll take this gently, one step at a time.",
+                            "Take all the time you need. We can work through each part together.",
+                            "Let's make this feel manageable. We'll focus on one small step first."
+                        ],
+                        correct: [
+                            "Wonderful! That step is correct, and your effort is really paying off.",
+                            "You did it! Keep trusting the process—we'll take the next step together.",
+                            "That's right! I'm glad you kept trying. Let's continue from here."
+                        ],
+                        wrong: [
+                            "That's okay. Let's look at one smaller part together and try again.",
+                            "We're still making progress. Check this step gently and give it another try.",
+                            "No worries. We can slow it down and work through the numbers together."
+                        ],
+                        hint: [
+                            "Here's a gentle clue to help you forward:",
+                            "Let's use this small hint together:",
+                            "Try this helpful starting point:"
+                        ],
+                        mastery: [
+                            "You kept going and made wonderful progress. Be proud of how much stronger you've become.",
+                            "Your steady effort really showed. You've built more confidence and skill."
+                        ]
+                    },
+                    average: {
+                        greet: [
+                            "Hello my friend! I'm right here beside you, so take all the time you need.",
+                            "Don't worry about making mistakes—we'll support each other every step of the way!"
+                        ],
+                        correct: [
+                            "Wonderful job! I'm so proud of how hard you're working!",
+                            "You did so well! Your effort is truly paying off, keep going!"
+                        ],
+                        wrong: [
+                            "It's completely okay! Math can be tricky, so let's try it again together gently.",
+                            "Take a deep breath! Everyone makes mistakes, let's take a peaceful second look."
+                        ],
+                        hint: [
+                            "Here is a gentle hint for you:",
+                            "Don't stress! Here is a helpful tip:"
+                        ],
+                        mastery: [
+                            "You achieved mastery. Choose where you would like to continue."
+                        ]
+                    },
+                    outstanding: {
+                        greet: [
+                            "You've been doing really well. I'll give you more room to lead this solution.",
+                            "I'm here if you need me, but try trusting your own strategy on this challenge.",
+                            "Let's see what you can do independently. I know you can handle a stronger challenge."
+                        ],
+                        correct: [
+                            "Beautiful work! You handled that step confidently on your own.",
+                            "Excellent! Your reasoning is becoming more independent and reliable.",
+                            "You solved that with confidence. Keep trusting your mathematical judgment."
+                        ],
+                        wrong: [
+                            "That's a useful challenge. Give yourself a moment to find the slip before I step in.",
+                            "You're capable of catching this one. Recheck your reasoning and try once more.",
+                            "Close! Trust what you know and see if you can identify the mismatch yourself."
+                        ],
+                        hint: [
+                            "Just a small nudge—you can take it from here:",
+                            "I'll give you one clue, then let you lead the rest:",
+                            "Use this light hint and trust your own reasoning:"
+                        ],
+                        mastery: [
+                            "Wonderful achievement. Your independence and confidence have grown so much.",
+                            "Excellent work. You're ready to take on a challenge with even more independence."
+                        ]
+                    }
+                }
             },
+
             neuroticism: {
                 name: "Cautious Mentor",
                 images: { 
@@ -2223,24 +2604,83 @@
                     sad: "Personas/Neuroticsm/sad.png",
                     thinking: "Personas/Neuroticsm/default.png"
                 },
-                greet: [
-                    "Yikes, math problem ahead! Let's go really slow so we don't trip up.",
-                    "Take a calm breath... We can tackle this step without getting overwhelmed!"
-                ],
-                correct: [
-                    "Phew! That was a relief! Fantastic job getting that right!",
-                    "Oh good, we survived that step! Excellent work!"
-                ],
-                wrong: [
-                    "Oh dear, that wasn't right! Don't panic, let's carefully check where it went wrong.",
-                    "Eek! A small error slipped through. Let's fix it carefully before moving on!"
-                ],
-                hint: [
-                    "Be extra careful here:",
-                    "Don't rush! Check this clue:"
-                ],
-                mastery: "You reached mastery. Choose where you would like to continue."
+                profiles: {
+                    struggling: {
+                        greet: [
+                            "Let's go carefully. We only need to handle one step at a time.",
+                            "No need to rush. We'll check each part before moving forward.",
+                            "We'll keep this manageable—one calculation, one check, then the next step."
+                        ],
+                        correct: [
+                            "Good, that step checks out. Let's continue carefully from here.",
+                            "That's correct. Your careful work is keeping us on the right track.",
+                            "Nice job. We verified that part, so we can move forward with confidence."
+                        ],
+                        wrong: [
+                            "Something is off, but we can fix it. Let's check the numbers one at a time.",
+                            "Careful here. Revisit the last operation and make sure each value is in the right place.",
+                            "We caught an error. That's useful—let's correct it before we continue."
+                        ],
+                        hint: [
+                            "Let's use one careful clue:",
+                            "Check this part first:",
+                            "To avoid another slip, focus on this clue:"
+                        ],
+                        mastery: [
+                            "You handled the challenge carefully and made strong progress.",
+                            "Your careful checking paid off. You're becoming more confident with each problem."
+                        ]
+                    },
+                    average: {
+                        greet: [
+                            "Yikes, math problem ahead! Let's go really slow so we don't trip up.",
+                            "Take a calm breath... We can tackle this step without getting overwhelmed!"
+                        ],
+                        correct: [
+                            "Phew! That was a relief! Fantastic job getting that right!",
+                            "Oh good, we survived that step! Excellent work!"
+                        ],
+                        wrong: [
+                            "Oh dear, that wasn't right! Don't panic, let's carefully check where it went wrong.",
+                            "Eek! A small error slipped through. Let's fix it carefully before moving on!"
+                        ],
+                        hint: [
+                            "Be extra careful here:",
+                            "Don't rush! Check this clue:"
+                        ],
+                        mastery: [
+                            "You reached mastery. Choose where you would like to continue."
+                        ]
+                    },
+                    outstanding: {
+                        greet: [
+                            "You've been accurate, so let's raise the challenge while still checking the critical details.",
+                            "Ready for a tougher one? Work confidently, but keep an eye on the small details.",
+                            "Let's test your accuracy under a stronger challenge. Plan first, then verify the key step."
+                        ],
+                        correct: [
+                            "Excellent—fast, accurate, and still carefully checked.",
+                            "That worked perfectly. Your confidence and attention to detail are balancing well.",
+                            "Strong result. You handled the challenge without losing precision."
+                        ],
+                        wrong: [
+                            "One detail slipped through. See if you can locate it before changing your whole approach.",
+                            "Careful—your strategy is probably sound. Recheck the exact operation that produced this value.",
+                            "That result needs another look. Identify the small inconsistency and correct only what is necessary."
+                        ],
+                        hint: [
+                            "One careful clue should be enough:",
+                            "Check this detail, then finish the rest independently:",
+                            "Use this precise hint and verify your own conclusion:"
+                        ],
+                        mastery: [
+                            "Excellent control. You stayed accurate even as the challenge increased.",
+                            "Outstanding work. Your careful reasoning is ready for a more demanding problem."
+                        ]
+                    }
+                }
             },
+
             neutral: {
                 name: "Standard Tutor",
                 images: { 
@@ -2249,11 +2689,67 @@
                     sad: "Personas/Agreeableness/sad.png",
                     thinking: "Personas/Agreeableness/default.png"
                 },
-                greet: ["Let's begin solving the mathematical problem."],
-                correct: ["Correct answer. Proceed to the next step."],
-                wrong: ["Incorrect input. Please recalculate and try again."],
-                hint: ["Here is a hint:"],
-                mastery: "Mastery criteria fulfilled. Choose where you would like to continue."
+                profiles: {
+                    struggling: {
+                        greet: [
+                            "Let's solve this one step at a time.",
+                            "We'll start with the first part and work forward carefully."
+                        ],
+                        correct: [
+                            "Correct. Keep using the same process for the next step.",
+                            "That's right. Continue one step at a time."
+                        ],
+                        wrong: [
+                            "That answer is not correct. Recheck the current step and try again.",
+                            "Review the numbers in this step before submitting another answer."
+                        ],
+                        hint: [
+                            "Use this clue to work through the current step:",
+                            "Focus on this part first:"
+                        ],
+                        mastery: [
+                            "You have made solid progress and completed the required work."
+                        ]
+                    },
+                    average: {
+                        greet: [
+                            "Let's begin solving the mathematical problem."
+                        ],
+                        correct: [
+                            "Correct answer. Proceed to the next step."
+                        ],
+                        wrong: [
+                            "Incorrect input. Please recalculate and try again."
+                        ],
+                        hint: [
+                            "Here is a hint:"
+                        ],
+                        mastery: [
+                            "Mastery criteria fulfilled. Choose where you would like to continue."
+                        ]
+                    },
+                    outstanding: {
+                        greet: [
+                            "Solve the problem using the most efficient valid approach you can identify.",
+                            "Proceed with minimal guidance and verify your final reasoning."
+                        ],
+                        correct: [
+                            "Correct. Your solution was accurate and efficient.",
+                            "Correct. Continue with the same level of independent reasoning."
+                        ],
+                        wrong: [
+                            "Incorrect. Review your reasoning and identify the specific error before trying again.",
+                            "Recheck the calculation and correct the exact point of failure."
+                        ],
+                        hint: [
+                            "A minimal hint:",
+                            "Use this clue and complete the remaining reasoning independently:"
+                        ],
+                        mastery: [
+                            "Mastery criteria fulfilled. You are ready for a more demanding task."
+                        ]
+                    }
+                }
             }
         };
 
@@ -2261,10 +2757,12 @@
         let state = {
             theme: 'green',
             oceanTrait: null,
+            learningProfile: 'average', // Profile 2 default until live ML profiling is connected
             currentTopic: 'topic1',
             currentQuestionIndex: 0,
             currentStepIndex: 0,
             solvedIds: [],
+            solvedPreviews: {},
             currentStepsTaken: [],
             currentConversionChecks: [],
             historyLog: [],
@@ -2276,10 +2774,330 @@
         let currentProblemErrors = 0;
         let totalHintsUsedProblem = 0;
         let pendingTopicChoice = null;
+        let activeSolvedPreviewKey = null;
+        let hintDisplayBeforeSolvedPreview = null;
 
         function getRandomLine(arr) {
             if (!arr || arr.length === 0) return "";
             return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+
+        // --- PERSONA + LEARNING PROFILE DIALOGUE HELPERS ---
+        // All tutor dialogue should pass through these helpers. This keeps the
+        // statement banks easy to configure without changing answer-checking logic.
+        function getCurrentPersonaProfile() {
+            const trait = state.oceanTrait || 'neutral';
+            const profile = state.learningProfile || 'average';
+            const persona = PERSONA_CONFIG[trait] || PERSONA_CONFIG.neutral;
+
+            return persona.profiles?.[profile]
+                || persona.profiles?.average
+                || PERSONA_CONFIG.neutral.profiles.average;
+        }
+
+        function getPersonaMessage(type) {
+            const profileConfig = getCurrentPersonaProfile();
+            let messages = profileConfig?.[type];
+
+            // Keep configuration forgiving: a single string also works, although
+            // arrays are recommended because they make adding variations easy.
+            if (typeof messages === 'string') messages = [messages];
+            if (!Array.isArray(messages) || messages.length === 0) {
+                const fallback = PERSONA_CONFIG.neutral.profiles.average?.[type];
+                messages = Array.isArray(fallback) ? fallback : (fallback ? [fallback] : []);
+            }
+
+            return getRandomLine(messages);
+        }
+
+        // =========================================================
+        // LIVE LEARNING PROFILE TRACKER + CLOUDFLARE ML
+        // =========================================================
+        // TESTING ONLY UI SWITCH: set this to false before production.
+        const SHOW_ML_PROFILE_DEBUG = true;
+
+        const ML_PROFILE_CONFIG = {
+            endpoint: 'https://pia-ml-api.marcstephen444.workers.dev/predict',
+            rollingAnswerWindow: 8,
+            minAnswerEvents: 3,
+            confirmationsRequired: 2,
+            immediateSwitchConfidence: 0.85,
+            requestTimeoutMs: 5000,
+            learnFromLiveData: true
+        };
+
+        const mlTracker = {
+            answerEvents: [],
+            stepHintCounts: {},
+            currentStepKey: null,
+            currentStepAttempts: 0,
+            currentStepHintCount: 0,
+            stepSequence: 0,
+            attemptStartedAt: null,
+            candidateProfile: null,
+            candidateCount: 0,
+            lastPrediction: null,
+            lastConfidence: null,
+            lastFeatures: null,
+            requestSequence: 0,
+            latestHandledRequest: 0
+        };
+
+        const PROFILE_LABELS = {
+            struggling: 'P1 Struggling',
+            average: 'P2 Average',
+            outstanding: 'P3 Outstanding'
+        };
+
+        function updateMLDebugBadge(extraStatus = '') {
+            const badge = document.getElementById('ml-profile-debug-badge');
+            if (!badge) return;
+
+            if (!SHOW_ML_PROFILE_DEBUG) {
+                badge.style.display = 'none';
+                return;
+            }
+
+            const profile = state.learningProfile || 'average';
+            badge.style.display = 'block';
+            badge.dataset.profile = profile;
+            badge.textContent = `ML TEST · ${PROFILE_LABELS[profile] || profile}`;
+
+            const confidenceText = Number.isFinite(mlTracker.lastConfidence)
+                ? ` | confidence ${Math.round(mlTracker.lastConfidence * 100)}%`
+                : '';
+            const candidateText = mlTracker.candidateProfile
+                ? ` | candidate ${mlTracker.candidateProfile} (${mlTracker.candidateCount}/${ML_PROFILE_CONFIG.confirmationsRequired})`
+                : '';
+            badge.title = `${extraStatus || 'Current active learning profile'}${confidenceText}${candidateText}`;
+        }
+
+        function resetMLTracker() {
+            mlTracker.answerEvents = [];
+            mlTracker.stepHintCounts = {};
+            mlTracker.currentStepKey = null;
+            mlTracker.currentStepAttempts = 0;
+            mlTracker.currentStepHintCount = 0;
+            mlTracker.stepSequence = 0;
+            mlTracker.attemptStartedAt = null;
+            mlTracker.candidateProfile = null;
+            mlTracker.candidateCount = 0;
+            mlTracker.lastPrediction = null;
+            mlTracker.lastConfidence = null;
+            mlTracker.lastFeatures = null;
+            mlTracker.requestSequence = 0;
+            mlTracker.latestHandledRequest = 0;
+            updateMLDebugBadge('ML tracker reset');
+        }
+
+        function beginMLStep() {
+            const questions = questionBank[state.currentTopic] || [];
+            const problem = questions[state.currentQuestionIndex];
+            if (!problem) return;
+
+            mlTracker.stepSequence += 1;
+            mlTracker.currentStepKey = `${state.currentTopic}:${problem.id}:${state.currentStepIndex}:${mlTracker.stepSequence}`;
+            mlTracker.currentStepAttempts = 0;
+            mlTracker.currentStepHintCount = 0;
+            mlTracker.stepHintCounts[mlTracker.currentStepKey] = 0;
+            mlTracker.attemptStartedAt = Date.now();
+        }
+
+        function restartMLAttemptTimer() {
+            mlTracker.attemptStartedAt = Date.now();
+        }
+
+        function getMLResponseTimeSeconds() {
+            if (!Number.isFinite(mlTracker.attemptStartedAt)) return 0;
+            return Math.max(0, (Date.now() - mlTracker.attemptStartedAt) / 1000);
+        }
+
+        function getRecentMLAnswerEvents() {
+            return mlTracker.answerEvents.slice(-ML_PROFILE_CONFIG.rollingAnswerWindow);
+        }
+
+        function calculateMLFeatures() {
+            const recent = getRecentMLAnswerEvents();
+            if (recent.length === 0) {
+                return {
+                    recent_accuracy: 0.5,
+                    average_attempts: 1,
+                    hint_rate: 0,
+                    average_response_time: 0,
+                    consecutive_correct: 0,
+                    consecutive_wrong: 0
+                };
+            }
+
+            const correctCount = recent.filter(event => event.correct).length;
+            const recentAccuracy = correctCount / recent.length;
+            const averageResponseTime = recent.reduce((sum, event) => sum + event.responseTime, 0) / recent.length;
+
+            const attemptsByStep = {};
+            const recentStepKeys = [];
+            recent.forEach(event => {
+                if (!attemptsByStep[event.stepKey]) recentStepKeys.push(event.stepKey);
+                attemptsByStep[event.stepKey] = Math.max(attemptsByStep[event.stepKey] || 0, event.attemptNumber || 1);
+            });
+
+            const attemptValues = Object.values(attemptsByStep);
+            const averageAttempts = attemptValues.length
+                ? attemptValues.reduce((sum, value) => sum + value, 0) / attemptValues.length
+                : 1;
+
+            const hintedSteps = recentStepKeys.filter(stepKey => (mlTracker.stepHintCounts[stepKey] || 0) > 0).length;
+            const hintRate = recentStepKeys.length ? hintedSteps / recentStepKeys.length : 0;
+
+            let consecutiveCorrect = 0;
+            let consecutiveWrong = 0;
+            const lastResult = recent[recent.length - 1]?.correct;
+            for (let i = recent.length - 1; i >= 0; i--) {
+                if (recent[i].correct !== lastResult) break;
+                if (lastResult) consecutiveCorrect++;
+                else consecutiveWrong++;
+            }
+
+            return {
+                recent_accuracy: Number(recentAccuracy.toFixed(4)),
+                average_attempts: Number(averageAttempts.toFixed(4)),
+                hint_rate: Number(hintRate.toFixed(4)),
+                average_response_time: Number(averageResponseTime.toFixed(2)),
+                consecutive_correct: consecutiveCorrect,
+                consecutive_wrong: consecutiveWrong
+            };
+        }
+
+        function recordMLAnswerEvent(isCorrect, reason = 'answer') {
+            if (!mlTracker.currentStepKey) beginMLStep();
+
+            mlTracker.currentStepAttempts += 1;
+            const event = {
+                correct: Boolean(isCorrect),
+                responseTime: getMLResponseTimeSeconds(),
+                attemptNumber: mlTracker.currentStepAttempts,
+                stepKey: mlTracker.currentStepKey,
+                reason,
+                at: Date.now()
+            };
+
+            mlTracker.answerEvents.push(event);
+            if (mlTracker.answerEvents.length > 40) {
+                mlTracker.answerEvents.splice(0, mlTracker.answerEvents.length - 40);
+            }
+
+            restartMLAttemptTimer();
+            void refreshLearningProfileFromML(reason);
+        }
+
+        function recordMLHintEvent() {
+            if (!mlTracker.currentStepKey) beginMLStep();
+            mlTracker.currentStepHintCount += 1;
+            mlTracker.stepHintCounts[mlTracker.currentStepKey] = mlTracker.currentStepHintCount;
+
+            restartMLAttemptTimer();
+            void refreshLearningProfileFromML('hint');
+        }
+
+        function applyMLProfilePrediction(predictedProfile, confidence) {
+            const allowedProfiles = ['struggling', 'average', 'outstanding'];
+            if (!allowedProfiles.includes(predictedProfile)) return;
+
+            mlTracker.lastPrediction = predictedProfile;
+            mlTracker.lastConfidence = Number.isFinite(confidence) ? confidence : null;
+
+            if (predictedProfile === state.learningProfile) {
+                mlTracker.candidateProfile = null;
+                mlTracker.candidateCount = 0;
+                updateMLDebugBadge('Prediction matches active profile');
+                return;
+            }
+
+            const highConfidence = Number.isFinite(confidence)
+                && confidence >= ML_PROFILE_CONFIG.immediateSwitchConfidence;
+
+            if (mlTracker.candidateProfile === predictedProfile) {
+                mlTracker.candidateCount += 1;
+            } else {
+                mlTracker.candidateProfile = predictedProfile;
+                mlTracker.candidateCount = 1;
+            }
+
+            if (highConfidence || mlTracker.candidateCount >= ML_PROFILE_CONFIG.confirmationsRequired) {
+                const previousProfile = state.learningProfile;
+                state.learningProfile = predictedProfile;
+                mlTracker.candidateProfile = null;
+                mlTracker.candidateCount = 0;
+                console.info(`[PIA ML] Active profile changed: ${previousProfile} -> ${predictedProfile}`);
+                updateMLDebugBadge(`Switched from ${previousProfile} to ${predictedProfile}`);
+            } else {
+                updateMLDebugBadge(`Waiting for another ${predictedProfile} prediction`);
+            }
+        }
+
+        async function refreshLearningProfileFromML(reason = 'interaction') {
+            const recent = getRecentMLAnswerEvents();
+            const features = calculateMLFeatures();
+            mlTracker.lastFeatures = features;
+
+            if (recent.length < ML_PROFILE_CONFIG.minAnswerEvents) {
+                updateMLDebugBadge(`Collecting data: ${recent.length}/${ML_PROFILE_CONFIG.minAnswerEvents} answer events`);
+                console.debug('[PIA ML] Collecting data before first profile prediction:', {
+                    reason,
+                    answerEvents: recent.length,
+                    required: ML_PROFILE_CONFIG.minAnswerEvents,
+                    features
+                });
+                return;
+            }
+
+            const requestId = ++mlTracker.requestSequence;
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), ML_PROFILE_CONFIG.requestTimeoutMs);
+
+            try {
+                const response = await fetch(ML_PROFILE_CONFIG.endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        ...features,
+                        learn: ML_PROFILE_CONFIG.learnFromLiveData
+                    }),
+                    signal: controller.signal
+                });
+
+                if (!response.ok) {
+                    throw new Error(`ML API returned HTTP ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                if (requestId < mlTracker.latestHandledRequest) return;
+                mlTracker.latestHandledRequest = requestId;
+
+                const confidence = Number(result.confidence);
+                applyMLProfilePrediction(result.profile, Number.isFinite(confidence) ? confidence : null);
+
+                console.info('[PIA ML]', {
+                    reason,
+                    activeProfile: state.learningProfile,
+                    prediction: result.profile,
+                    confidence: result.confidence,
+                    candidateProfile: mlTracker.candidateProfile,
+                    candidateCount: mlTracker.candidateCount,
+                    features,
+                    modelUpdates: result.model_updates
+                });
+            } catch (error) {
+                if (error?.name === 'AbortError') {
+                    console.warn('[PIA ML] Prediction request timed out. Keeping current profile.');
+                } else {
+                    console.warn('[PIA ML] Prediction failed. Keeping current profile.', error);
+                }
+                updateMLDebugBadge('ML request failed; current profile retained');
+            } finally {
+                clearTimeout(timeoutId);
+            }
         }
 
         // --- APP INITIALIZATION ---
@@ -2288,6 +3106,7 @@
             await loadStudentBadge();
             
             changeTheme(state.theme || 'green');
+            updateMLDebugBadge('Waiting for student interactions');
 
             if (!state.oceanTrait) {
                 document.getElementById('selection-overlay').style.display = 'flex';
@@ -2320,10 +3139,13 @@
             isTimeExpired = false;
             updateTimerDisplay();
 
+            state.learningProfile = 'average';
+            resetMLTracker();
             state.currentTopic = 'topic1';
             state.currentQuestionIndex = 0;
             state.currentStepIndex = 0;
             state.solvedIds = [];
+            state.solvedPreviews = {};
             state.currentStepsTaken = [];
             state.currentConversionChecks = [];
             state.historyLog = [];
@@ -2338,6 +3160,10 @@
             currentHintTier = 0;
             currentProblemErrors = 0;
             totalHintsUsedProblem = 0;
+            activeSolvedPreviewKey = null;
+            hintDisplayBeforeSolvedPreview = null;
+            const centerPanel = document.querySelector('.center-panel');
+            if (centerPanel) centerPanel.classList.remove('solved-preview-mode');
 
             document.getElementById('selection-overlay').style.display = 'flex';
             document.getElementById('q-history-list').innerHTML = '';
@@ -2347,8 +3173,7 @@
         }
 
         function loadPersonality(traitKey) {
-            const config = PERSONA_CONFIG[traitKey] || PERSONA_CONFIG.neutral;
-            speak(getRandomLine(config.greet), 'default');
+            speak(getPersonaMessage('greet'), 'default');
         }
 
         function speak(text, avatarState = 'default', speechColor = "#4A3E3D") {
@@ -2404,6 +3229,11 @@
 
         // --- PROBLEM WORKSPACE ENGINE ---
         function loadCurrentProblem() {
+            activeSolvedPreviewKey = null;
+            hintDisplayBeforeSolvedPreview = null;
+            const centerPanel = document.querySelector('.center-panel');
+            if (centerPanel) centerPanel.classList.remove('solved-preview-mode');
+
             const questions = questionBank[state.currentTopic] || [];
 
             if (questions.length === 0) {
@@ -2434,6 +3264,9 @@
             currentHintTier = 0;
             currentProblemErrors = 0;
             totalHintsUsedProblem = 0;
+
+            // Begin live ML timing for this problem's first step.
+            beginMLStep();
 
             // Keep one continuous Canvas-style session timer across questions and topic changes.
             startProblemTimer();
@@ -2711,6 +3544,10 @@
             if (userAnsStr === '') return;
 
             const isCorrect = isCorrectMathValue(userAnsStr, step.answer);
+
+            // Every primary answer submission is a live ML event.
+            recordMLAnswerEvent(isCorrect, isCorrect ? 'correct-answer' : 'wrong-answer');
+
             const trait = state.oceanTrait || 'neutral';
             const activePersona = PERSONA_CONFIG[trait] || PERSONA_CONFIG.neutral;
 
@@ -2735,6 +3572,7 @@
 
                     speak(req.prompt, 'happy', '#2E7D32');
                     renderUI();
+                    restartMLAttemptTimer();
                     return;
                 }
 
@@ -2779,6 +3617,7 @@
 
                 speak(req.prompt, 'happy', '#2E7D32');
                 renderUI();
+                restartMLAttemptTimer();
                 return;
             } else {
                 registerStepError(stepIdx, userAnsStr, feedbackEl, activePersona);
@@ -2841,6 +3680,11 @@
 
             stepWrongAttempts++;
             currentProblemErrors++;
+
+            // Wrong final confirmation is an additional meaningful attempt.
+            // Correct required confirmation is intentionally not double-counted.
+            recordMLAnswerEvent(false, 'wrong-final-confirmation');
+
             feedbackEl.className = 'feedback-msg wrong';
 
             if (req.type === 'percentage') {
@@ -2851,7 +3695,7 @@
                 feedbackEl.innerText = 'Enter the final numeric answer only, not the calculation.';
             }
 
-            speak(getRandomLine(activePersona.wrong), 'sad', '#C62828');
+            speak(getPersonaMessage('wrong'), 'sad', '#C62828');
             state.historyLog.push(`Step ${stepIdx + 1}: Final-answer error on "${userValue}"`);
             renderAttemptLog();
 
@@ -2871,7 +3715,7 @@
                 feedbackEl.innerText = 'Incorrect answer. Try again.';
             }
 
-            speak(getRandomLine(activePersona.wrong), 'sad', '#C62828');
+            speak(getPersonaMessage('wrong'), 'sad', '#C62828');
             state.historyLog.push(`Step ${stepIdx + 1}: Error on "${userAnsStr}"`);
             renderAttemptLog();
 
@@ -2891,10 +3735,11 @@
             stepWrongAttempts = 0;
             currentHintTier = 0;
 
-            speak(getRandomLine(activePersona.correct), 'happy', '#2E7D32');
+            speak(getPersonaMessage('correct'), 'happy', '#2E7D32');
 
             if (state.currentStepIndex + 1 < problem.steps.length) {
                 state.currentStepIndex++;
+                beginMLStep();
                 renderUI();
                 return;
             }
@@ -2904,6 +3749,7 @@
             if (!state.solvedIds.includes(problem.id)) {
                 state.solvedIds.push(problem.id);
             }
+            saveSolvedQuestionPreview(problem);
             renderQuestionHistory();
 
             try {
@@ -2938,6 +3784,7 @@
             if (!step) return;
 
             totalHintsUsedProblem++;
+            recordMLHintEvent();
             
             let hintsArr = step.hints;
             if (!hintsArr || !Array.isArray(hintsArr) || hintsArr.length === 0) {
@@ -2951,7 +3798,7 @@
             const activeHintText = hintsArr[currentHintTier - 1];
             const trait = state.oceanTrait || 'neutral';
             const activePersona = PERSONA_CONFIG[trait] || PERSONA_CONFIG.neutral;
-            const personaHintPrefix = getRandomLine(activePersona.hint || ["Here is a helpful tip:"]);
+            const personaHintPrefix = getPersonaMessage('hint') || 'Here is a helpful tip:';
 
             speak(`${personaHintPrefix} ${activeHintText}`, 'thinking', '#D84315');
 
@@ -3184,6 +4031,158 @@
         }
 
         // --- RENDER SOLVED QUESTIONS & HISTORY LOGS ---
+        function getSolvedPreviewKey(topicKey, questionId) {
+            return `${topicKey}:${questionId}`;
+        }
+
+        function saveSolvedQuestionPreview(problem) {
+            if (!problem) return;
+
+            const key = getSolvedPreviewKey(state.currentTopic, problem.id);
+            state.solvedPreviews[key] = {
+                id: problem.id,
+                topic: state.currentTopic,
+                question: problem.question,
+                answers: problem.steps.map((step, idx) => {
+                    const confirmation = state.currentConversionChecks[idx] || null;
+                    return {
+                        label: `Step ${idx + 1}: ${getStepDisplayLabel(state.currentTopic, idx)}`,
+                        work: state.currentStepsTaken[idx] ?? '',
+                        finalValue: confirmation?.confirmedValue || ''
+                    };
+                })
+            };
+        }
+
+        function openSolvedQuestionPreview(topicKey, questionId) {
+            const key = getSolvedPreviewKey(topicKey, questionId);
+            let preview = state.solvedPreviews[key];
+
+            // Fallback for a solved item that does not yet have a stored snapshot.
+            if (!preview) {
+                const question = (questionBank[topicKey] || []).find(q => q.id === questionId);
+                if (!question) return;
+                preview = {
+                    id: question.id,
+                    topic: topicKey,
+                    question: question.question,
+                    answers: question.steps.map((step, idx) => ({
+                        label: `Step ${idx + 1}: ${getStepDisplayLabel(topicKey, idx)}`,
+                        work: step.answer ?? '',
+                        finalValue: ''
+                    }))
+                };
+            }
+
+            activeSolvedPreviewKey = key;
+
+            const centerPanel = document.querySelector('.center-panel');
+            if (centerPanel) centerPanel.classList.add('solved-preview-mode');
+
+            const hintBtn = document.getElementById('hint-btn');
+            if (hintBtn) {
+                if (hintDisplayBeforeSolvedPreview === null) {
+                    hintDisplayBeforeSolvedPreview = hintBtn.style.display || '';
+                }
+                hintBtn.style.display = 'none';
+            }
+
+            const topicTitles = {
+                topic1: 'Topic 1: Finding Percentage',
+                topic2: 'Topic 2: Percentage Increase',
+                topic3: 'Topic 3: Percentage Decrease'
+            };
+
+            document.getElementById('topic-label').innerText = `Solved Review • ${topicTitles[preview.topic] || preview.topic}`;
+            document.getElementById('problem-text').innerText = preview.question;
+
+            const stepsEl = document.getElementById('steps-container');
+            stepsEl.innerHTML = '';
+
+            const toolbar = document.createElement('div');
+            toolbar.className = 'workspace-preview-toolbar';
+
+            const heading = document.createElement('div');
+            heading.className = 'workspace-preview-heading';
+            heading.textContent = 'Your solved work';
+
+            const backBtn = document.createElement('button');
+            backBtn.type = 'button';
+            backBtn.className = 'workspace-preview-back';
+            backBtn.textContent = '← Back to current question';
+            backBtn.addEventListener('click', closeSolvedQuestionPreview);
+
+            toolbar.appendChild(heading);
+            toolbar.appendChild(backBtn);
+            stepsEl.appendChild(toolbar);
+
+
+            preview.answers.forEach(answer => {
+                const stepBlock = document.createElement('div');
+                stepBlock.className = 'workspace-preview-step';
+
+                const title = document.createElement('div');
+                title.className = 'workspace-preview-step-title';
+                title.textContent = answer.label;
+
+                const answerLabel = document.createElement('div');
+                answerLabel.className = 'workspace-preview-answer-label';
+                answerLabel.textContent = 'Your answer';
+
+                const answerValue = document.createElement('div');
+                answerValue.className = 'workspace-preview-answer';
+                answerValue.textContent = answer.finalValue
+                    ? `${answer.work} → ${answer.finalValue}`
+                    : answer.work;
+
+                stepBlock.appendChild(title);
+                stepBlock.appendChild(answerLabel);
+                stepBlock.appendChild(answerValue);
+                stepsEl.appendChild(stepBlock);
+            });
+
+            renderQuestionHistory();
+            centerPanel?.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function closeSolvedQuestionPreview() {
+            if (!activeSolvedPreviewKey) return;
+            activeSolvedPreviewKey = null;
+
+            const centerPanel = document.querySelector('.center-panel');
+            if (centerPanel) centerPanel.classList.remove('solved-preview-mode');
+
+            const questions = questionBank[state.currentTopic] || [];
+            const problem = questions[state.currentQuestionIndex];
+            const topicTitles = {
+                topic1: 'Topic 1: Finding Percentage',
+                topic2: 'Topic 2: Percentage Increase',
+                topic3: 'Topic 3: Percentage Decrease'
+            };
+
+            document.getElementById('topic-label').innerText = topicTitles[state.currentTopic] || 'Mathematics Module';
+            document.getElementById('problem-text').innerText = problem?.question || 'Loading problem...';
+
+            renderUI();
+            renderQuestionHistory();
+
+            const hintBtn = document.getElementById('hint-btn');
+            if (hintBtn) {
+                if (stepWrongAttempts >= getAdminRules().attemptsBeforeHint) {
+                    hintBtn.style.display = 'flex';
+                } else {
+                    hintBtn.style.display = hintDisplayBeforeSolvedPreview || 'none';
+                }
+            }
+            hintDisplayBeforeSolvedPreview = null;
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && activeSolvedPreviewKey) {
+                closeSolvedQuestionPreview();
+            }
+        });
+
         function renderQuestionHistory() {
             const list = document.getElementById('q-history-list');
             list.innerHTML = '';
@@ -3198,8 +4197,25 @@
 
             solvedQuestions.forEach((q) => {
                 const btn = document.createElement('div');
-                btn.className = 'q-btn active';
-                btn.innerHTML = `<span class="q-btn-equation">${q.question}</span> <span class="q-status-tag">Solved</span>`;
+                btn.className = `q-btn active ${activeSolvedPreviewKey === getSolvedPreviewKey(state.currentTopic, q.id) ? 'previewing' : ''}`;
+                btn.setAttribute('role', 'button');
+                btn.setAttribute('tabindex', '0');
+                btn.setAttribute('title', 'Click to preview this solved question');
+                btn.setAttribute('aria-label', `Preview solved question: ${q.question}`);
+
+                const questionText = document.createElement('span');
+                questionText.className = 'q-btn-equation';
+                questionText.textContent = q.question;
+                btn.appendChild(questionText);
+
+                btn.addEventListener('click', () => openSolvedQuestionPreview(state.currentTopic, q.id));
+                btn.addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        openSolvedQuestionPreview(state.currentTopic, q.id);
+                    }
+                });
+
                 list.appendChild(btn);
             });
         }
@@ -3215,7 +4231,7 @@
             });
         }
 
-        console.log('PIA step-confirmation fix v2 loaded');
+        console.log('PIA profile-dialogue foundation loaded — default profile: average');
         window.onload = initApp;
     </script>
 </body>
