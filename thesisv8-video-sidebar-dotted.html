@@ -1,0 +1,3222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIA - Tutorial Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+
+    <script>
+        (function() {
+            const params = new URLSearchParams(window.location.search);
+            const sid = params.get('student_id');
+            if (sid) {
+                localStorage.setItem('pia_student_id', sid);
+                console.log('Student ID set from URL:', sid);
+            } else {
+                console.warn('No student_id in URL. Sessions will not be saved.');
+            }
+        })();
+    </script>
+
+    <style>
+        /* =====================================================
+           PIA — "Math Notebook" design
+           Graph paper, chalkboard, ruler, stickers.
+           The mentor is the loudest thing on screen.
+           ===================================================== */
+        :root {
+            --ink: #1b1a2e;
+            --hl: #FFE55C;
+            --ok: #2BD97C;
+            --ok-deep: #12794A;
+            --ok-tint: #E4FBEE;
+            --bad: #FF5468;
+            --bad-deep: #A8132A;
+            --bad-tint: #FFE1E5;
+            --chalkboard: #1F5A47;
+            --display: 'Bagel Fat One', 'Fredoka', 'Segoe UI', sans-serif;
+            --body: 'Fredoka', 'Quicksand', 'Segoe UI', sans-serif;
+
+            /* Theme variables (set by changeTheme in the script) */
+            --bg-gradient: linear-gradient(135deg, #a8e063 0%, #56ab2f 100%);
+            --glass-bg: #FFFDF6;
+            --accent-color: #4CAF50;
+            --accent-glow: rgba(76, 175, 80, 0.4);
+
+            --sidebar-width: clamp(300px, 29vw, 400px);
+            --card-radius: 18px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--body);
+        }
+
+        :focus-visible {
+            outline: 3px dashed var(--ink);
+            outline-offset: 3px;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            height: 100vh;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            padding: 8px 12px 12px;
+            overflow: hidden;
+            position: relative;
+            color: var(--ink);
+            transition: background 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Floating math symbols on the colored frame */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='360'%20height='360'%3E%3Cg%20font-family='Arial%20Rounded%20MT%20Bold%2CArial%2Csans-serif'%20font-weight='900'%20fill='%23ffffff'%20fill-opacity='0.2'%3E%3Ctext%20x='30'%20y='80'%20font-size='56'%20transform='rotate%28-12%2030%2080%29'%3E%2B%3C/text%3E%3Ctext%20x='250'%20y='60'%20font-size='60'%20transform='rotate%2810%20250%2060%29'%3E%E2%88%92%3C/text%3E%3Ctext%20x='150'%20y='170'%20font-size='64'%20transform='rotate%2818%20150%20170%29'%3E%C3%97%3C/text%3E%3Ctext%20x='40'%20y='260'%20font-size='56'%20transform='rotate%28-8%2040%20260%29'%3E%C3%B7%3C/text%3E%3Ctext%20x='280'%20y='200'%20font-size='60'%20transform='rotate%28-14%20280%20200%29'%3E=%3C/text%3E%3Ctext%20x='200'%20y='320'%20font-size='52'%20transform='rotate%2812%20200%20320%29'%3E%25%3C/text%3E%3Ctext%20x='110'%20y='40'%20font-size='48'%20transform='rotate%28-6%20110%2040%29'%3E%CF%80%3C/text%3E%3Ctext%20x='320'%20y='330'%20font-size='52'%20transform='rotate%288%20320%20330%29'%3E%E2%88%9A%3C/text%3E%3Ctext%20x='20'%20y='170'%20font-size='44'%20transform='rotate%2814%2020%20170%29'%3E%3F%3C/text%3E%3Ctext%20x='300'%20y='120'%20font-size='44'%20transform='rotate%28-10%20300%20120%29'%3E%E2%88%91%3C/text%3E%3C/g%3E%3C/svg%3E") 0 0 / 360px 360px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        header, .app-container { position: relative; z-index: 1; }
+
+        /* ---------- Header ---------- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px 12px;
+            padding: 0 2px 9px;
+        }
+
+        .header-title {
+            font-family: var(--display);
+            font-size: 1.5rem;
+            line-height: 1;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow:
+                2px 0 0 var(--ink), -2px 0 0 var(--ink), 0 2px 0 var(--ink), 0 -2px 0 var(--ink),
+                2px 2px 0 var(--ink), -2px -2px 0 var(--ink), 2px -2px 0 var(--ink), -2px 2px 0 var(--ink),
+                4px 5px 0 var(--ink);
+        }
+
+        .header-title span { font-family: var(--display); }
+
+        .logo-mark {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            background: var(--hl);
+            color: var(--ink);
+            border: 3px solid var(--ink);
+            border-radius: 12px;
+            transform: rotate(-7deg);
+            box-shadow: 3px 3px 0 var(--ink);
+            font-size: 1.5rem;
+            text-shadow: none;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .timer-badge {
+            background: var(--ink);
+            color: #B8FF5C;
+            border: 3px solid #fff;
+            padding: 3px 14px 3px 10px;
+            border-radius: 999px;
+            font-family: var(--display);
+            font-size: 1.15rem;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 3px 3px 0 var(--ink);
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .timer-badge span {
+            font-family: var(--display);
+            display: inline-block;
+            min-width: 4.6ch;
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Stopwatch drawn in CSS */
+        .timer-badge::before {
+            content: '';
+            width: 18px;
+            height: 18px;
+            flex: none;
+            border: 2.5px solid currentColor;
+            border-radius: 50%;
+            background:
+                linear-gradient(currentColor, currentColor) 50% 1px / 2px 6px no-repeat,
+                linear-gradient(currentColor, currentColor) 50% 50% / 5px 2px no-repeat;
+        }
+
+        .timer-badge.warning {
+            background: var(--bad);
+            color: var(--ink);
+            animation: pulseTimer 0.5s infinite alternate;
+        }
+
+        @keyframes pulseTimer {
+            0% { transform: scale(1) rotate(-1deg); }
+            100% { transform: scale(1.07) rotate(1deg); }
+        }
+
+        .restart-btn {
+            background: #fff;
+            color: var(--ink);
+            border: 3px solid var(--ink);
+            padding: 5px 16px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            box-shadow: 3px 3px 0 var(--ink);
+            transition: transform 0.12s, box-shadow 0.12s;
+        }
+
+        .restart-btn:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--ink); }
+        .restart-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+
+        .student-badge {
+            background: var(--hl);
+            color: var(--ink);
+            border: 3px solid var(--ink);
+            border-radius: 999px;
+            padding: 5px 16px 5px 12px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            box-shadow: 3px 3px 0 var(--ink);
+        }
+
+        .student-badge::before { content: '\2605'; font-size: 1rem; }
+
+        /* ---------- App frame ---------- */
+        .app-container {
+            flex: 1;
+            min-height: 0;
+            background: var(--glass-bg);
+            border: 3px solid var(--ink);
+            border-radius: 24px;
+            box-shadow: 6px 6px 0 var(--ink);
+            display: grid;
+            grid-template-columns: 50px var(--sidebar-width) minmax(0, 1fr) 236px;
+            overflow: hidden;
+        }
+
+        /* ---------- Theme colors strip ---------- */
+        .action-bar {
+            background: var(--ink);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px 0;
+            gap: 10px;
+        }
+
+        .action-bar::before {
+            content: 'Colors';
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            color: #fff;
+            opacity: 0.85;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .dot {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid #fff;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .dot:hover { transform: scale(1.3) rotate(14deg); }
+        .dot:focus-visible { outline: 3px solid var(--hl); outline-offset: 2px; }
+
+        .green { background: #4CAF50; } .blue { background: #2196F3; } .purple { background: #B983F5; } .red { background: #FF5252; }
+        .yellow { background: #FFC107; } .orange { background: #e67e22; } .pink { background: #FF5FA2; } .midnight { background: #2c3e50; }
+
+        /* ---------- Mentor stage (left) ---------- */
+        .left-sidebar {
+            position: relative;
+            z-index: 10;
+            background: var(--accent-color);
+            border-right: 3px solid var(--ink);
+            display: flex;
+            flex-direction: column;
+            padding: 14px;
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        /* Slowly turning sunburst behind the mentor */
+        .left-sidebar::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 58%;
+            width: 230%;
+            aspect-ratio: 1;
+            transform: translate(-50%, -50%);
+            background: repeating-conic-gradient(rgba(255, 255, 255, 0.22) 0 9deg, transparent 9deg 18deg);
+            animation: spinRays 70s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes spinRays {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .left-sidebar > * { position: relative; z-index: 1; }
+
+        .avatar-container {
+            flex: 1;
+            min-height: 0;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        /* Spotlight behind the mentor */
+        .avatar-container::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: 4px;
+            width: 92%;
+            height: 72%;
+            transform: translateX(-50%);
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0 38%, rgba(255, 255, 255, 0) 68%);
+            pointer-events: none;
+        }
+
+        .avatar-container:has(.avatar-img.talking)::before {
+            animation: haloPulse 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes haloPulse {
+            from { transform: translateX(-50%) scale(1); }
+            to { transform: translateX(-50%) scale(1.09); }
+        }
+
+        /* Floor shadow */
+        .avatar-container::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: -3px;
+            width: 62%;
+            height: 16px;
+            transform: translateX(-50%);
+            background: var(--ink);
+            opacity: 0.3;
+            border-radius: 50%;
+        }
+
+        /* Speech bubbles (mentor stage + popup share the same look) */
+        .prompt-box,
+        .mastery-speech-bubble {
+            background: #fff;
+            border: 3px solid var(--ink);
+            border-radius: 22px;
+            padding: 12px 16px;
+            font-size: clamp(0.95rem, 1.35vw, 1.08rem);
+            font-weight: 600;
+            line-height: 1.35;
+            color: #2b2850;
+            text-align: center;
+            position: relative;
+            width: 100%;
+            margin-bottom: 20px;
+            box-shadow: 5px 5px 0 var(--ink);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: none;
+            min-height: 78px;
+        }
+
+        .prompt-box::before,
+        .mastery-speech-bubble::before {
+            content: '';
+            position: absolute;
+            bottom: -18px;
+            left: 50%;
+            margin-left: -14px;
+            border-style: solid;
+            border-width: 18px 14px 0;
+            border-color: var(--ink) transparent;
+        }
+
+        .prompt-box::after,
+        .mastery-speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -11px;
+            left: 50%;
+            margin-left: -9px;
+            border-style: solid;
+            border-width: 13px 9px 0;
+            border-color: #fff transparent;
+        }
+
+        .prompt-box.speaking { animation: bubblePop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+        @keyframes bubblePop {
+            0% { transform: scale(0.9) rotate(-1.5deg); opacity: 0.8; }
+            55% { transform: scale(1.04) rotate(0.5deg); }
+            100% { transform: scale(1) rotate(0); opacity: 1; }
+        }
+
+        .avatar-img {
+            flex: 1 1 0;
+            min-height: 110px;
+            width: 100%;
+            max-width: 340px;
+            object-fit: contain;
+            object-position: center bottom;
+            display: block;
+            position: relative;
+            z-index: 2;
+            animation: floatAvatar 3s ease-in-out infinite;
+            filter: drop-shadow(3px 4px 0 rgba(27, 26, 46, 0.35));
+        }
+
+        .avatar-img.talking { animation: avatarTalk 0.4s ease-in-out infinite alternate; }
+
+        @keyframes floatAvatar {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        @keyframes avatarTalk {
+            0% { transform: translateY(0) scale(1) rotate(-1deg); }
+            100% { transform: translateY(-5px) scale(1.03) rotate(1deg); }
+        }
+
+        .hint-container {
+            margin-top: auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .hint-btn {
+            width: 100%;
+            padding: 11px 12px;
+            background: var(--hl);
+            border: 3px solid var(--ink);
+            color: var(--ink);
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 4px 4px 0 var(--ink);
+            transition: transform 0.12s, box-shadow 0.12s;
+            animation: hintWiggle 4s ease-in-out infinite;
+        }
+
+        .hint-btn::before {
+            content: '?';
+            width: 24px;
+            height: 24px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: var(--ink);
+            color: var(--hl);
+            font-family: var(--display);
+            font-size: 0.95rem;
+        }
+
+        .hint-btn:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--ink); }
+        .hint-btn:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--ink); }
+
+        @keyframes hintWiggle {
+            0%, 90%, 100% { rotate: 0deg; }
+            93% { rotate: -2.5deg; }
+            96% { rotate: 2.5deg; }
+            98% { rotate: -1.5deg; }
+        }
+
+        /* ---------- Workspace (center): graph paper ---------- */
+        .center-panel {
+            padding: 16px 22px 20px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            min-height: 0;
+            background-color: var(--glass-bg);
+            background-image:
+                url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='360'%20height='360'%3E%3Cg%20font-family='Arial%20Rounded%20MT%20Bold%2CArial%2Csans-serif'%20font-weight='900'%20fill='%231b1a2e'%20fill-opacity='0.075'%3E%3Ctext%20x='30'%20y='80'%20font-size='56'%20transform='rotate%28-12%2030%2080%29'%3E%2B%3C/text%3E%3Ctext%20x='250'%20y='60'%20font-size='60'%20transform='rotate%2810%20250%2060%29'%3E%E2%88%92%3C/text%3E%3Ctext%20x='150'%20y='170'%20font-size='64'%20transform='rotate%2818%20150%20170%29'%3E%C3%97%3C/text%3E%3Ctext%20x='40'%20y='260'%20font-size='56'%20transform='rotate%28-8%2040%20260%29'%3E%C3%B7%3C/text%3E%3Ctext%20x='280'%20y='200'%20font-size='60'%20transform='rotate%28-14%20280%20200%29'%3E=%3C/text%3E%3Ctext%20x='200'%20y='320'%20font-size='52'%20transform='rotate%2812%20200%20320%29'%3E%25%3C/text%3E%3Ctext%20x='110'%20y='40'%20font-size='48'%20transform='rotate%28-6%20110%2040%29'%3E%CF%80%3C/text%3E%3Ctext%20x='320'%20y='330'%20font-size='52'%20transform='rotate%288%20320%20330%29'%3E%E2%88%9A%3C/text%3E%3Ctext%20x='20'%20y='170'%20font-size='44'%20transform='rotate%2814%2020%20170%29'%3E%3F%3C/text%3E%3Ctext%20x='300'%20y='120'%20font-size='44'%20transform='rotate%28-10%20300%20120%29'%3E%E2%88%91%3C/text%3E%3C/g%3E%3C/svg%3E"),
+                linear-gradient(rgba(27, 26, 46, 0.1) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(27, 26, 46, 0.1) 2px, transparent 2px),
+                linear-gradient(rgba(27, 26, 46, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(27, 26, 46, 0.05) 1px, transparent 1px);
+            background-size: 360px 360px, 140px 140px, 140px 140px, 28px 28px, 28px 28px;
+            background-attachment: local;
+        }
+
+        /* Chalkboard problem */
+        .problem-header-block {
+            position: relative;
+            text-align: center;
+            width: 100%;
+            max-width: 760px;
+            margin: 0 auto 28px;
+            padding: 20px 34px 24px;
+            background:
+                radial-gradient(ellipse at 18% 12%, rgba(255, 255, 255, 0.12), transparent 55%),
+                radial-gradient(ellipse at 88% 90%, rgba(255, 255, 255, 0.08), transparent 50%),
+                var(--chalkboard);
+            border: 3px solid var(--ink);
+            border-radius: 16px;
+            box-shadow:
+                inset 0 0 0 7px #D49A55,
+                inset 0 0 0 10px var(--ink),
+                6px 6px 0 var(--ink);
+        }
+
+        /* Chalk + eraser on the ledge */
+        .problem-header-block::before {
+            content: '';
+            position: absolute;
+            left: 40px;
+            bottom: -17px;
+            width: 54px;
+            height: 15px;
+            background: linear-gradient(to bottom, #F7B6C6 0 55%, #3D3A5C 55%);
+            border: 2.5px solid var(--ink);
+            border-radius: 5px;
+            transform: rotate(3deg);
+        }
+
+        .problem-header-block::after {
+            content: '';
+            position: absolute;
+            right: 44px;
+            bottom: -15px;
+            width: 56px;
+            height: 11px;
+            background: #fff;
+            border: 2.5px solid var(--ink);
+            border-radius: 4px;
+            transform: rotate(-5deg);
+        }
+
+        .problem-label {
+            display: inline-block;
+            font-size: 0.98rem;
+            font-weight: 600;
+            color: var(--hl);
+            margin-bottom: 8px;
+            text-decoration: underline wavy rgba(255, 229, 92, 0.65);
+            text-underline-offset: 6px;
+        }
+
+        .problem-statement {
+            font-size: clamp(1.35rem, 2.3vw, 1.95rem);
+            font-weight: 600;
+            color: #FDF9EC;
+            line-height: 1.35;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.18);
+        }
+
+        /* ---------- Step cards: worksheet strips with a ruler ---------- */
+        .steps-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            width: 100%;
+            max-width: 760px;
+            margin: 0 auto;
+        }
+
+        .step-card {
+            position: relative;
+            border: 3px solid var(--ink);
+            border-radius: var(--card-radius);
+            padding: 14px 16px 16px 46px;
+            background: #fff;
+            box-shadow: 5px 5px 0 var(--ink);
+            overflow: hidden;
+            animation: popIn 0.4s cubic-bezier(0.2, 1.4, 0.4, 1);
+        }
+
+        @keyframes popIn {
+            0% { opacity: 0; transform: translateY(16px) scale(0.95); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* The ruler down the left edge */
+        .step-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 28px;
+            background-color: var(--accent-color);
+            background-image:
+                repeating-linear-gradient(to bottom, transparent 0 38px, var(--ink) 38px 40px),
+                repeating-linear-gradient(to bottom, transparent 0 6px, var(--ink) 6px 8px);
+            background-size: 20px 100%, 11px 100%;
+            background-position: right top, right top;
+            background-repeat: no-repeat;
+            border-right: 3px solid var(--ink);
+        }
+
+        .step-card.correct { background: var(--ok-tint); }
+        .step-card.correct::before { background-color: var(--ok); }
+
+        .step-card.correct::after {
+            content: '\2713';
+            position: absolute;
+            right: 12px;
+            top: 10px;
+            width: 34px;
+            height: 34px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: var(--ok);
+            border: 3px solid var(--ink);
+            color: var(--ink);
+            font-family: var(--display);
+            font-size: 1.15rem;
+            transform: rotate(10deg);
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px 12px;
+            margin-bottom: 10px;
+            padding-right: 40px;
+        }
+
+        .step-number-badge {
+            padding: 3px 12px;
+            background: var(--hl);
+            color: var(--ink);
+            border: 2.5px solid var(--ink);
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.82rem;
+            white-space: nowrap;
+            transform: rotate(-2.5deg);
+            box-shadow: 2px 2px 0 var(--ink);
+        }
+
+        .step-card.correct .step-number-badge { background: var(--ok); }
+        .step-card.correct .step-number-badge::before { content: '\2713\00a0'; }
+
+        .step-title {
+            font-family: var(--display);
+            font-size: 1.15rem;
+            line-height: 1.1;
+            color: var(--ink);
+        }
+
+        .solution-label {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #46437a;
+            margin-bottom: 6px;
+        }
+
+        .solution-input-row { display: flex; gap: 10px; }
+
+        .solution-input {
+            flex: 1;
+            min-width: 0;
+            height: 54px;
+            border: 3px solid var(--ink);
+            border-radius: 14px;
+            padding: 0 16px;
+            font-size: 1.35rem;
+            font-weight: 600;
+            color: var(--ink);
+            background: #FFFBE3;
+            outline: none;
+            box-shadow: inset 0 -4px 0 rgba(27, 26, 46, 0.08);
+            transition: background 0.15s, box-shadow 0.15s;
+        }
+
+        .solution-input::placeholder { color: #8a87a8; font-weight: 500; }
+
+        .solution-input:focus {
+            background: #FFF3A6;
+            box-shadow: 4px 4px 0 var(--ink);
+        }
+
+        .solution-input:disabled {
+            background: #CDF3DD;
+            color: var(--ok-deep);
+            border-color: var(--ok-deep);
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .step-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px 12px;
+            margin-top: 12px;
+        }
+
+        .feedback-msg { font-size: 0.95rem; font-weight: 700; }
+        .feedback-msg.correct { color: var(--ok-deep); animation: popIn 0.3s ease-out; }
+        .feedback-msg.wrong { color: var(--bad-deep); animation: shakeX 0.4s ease-in-out; }
+
+        @keyframes shakeX {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-6px); }
+            40% { transform: translateX(6px); }
+            60% { transform: translateX(-4px); }
+            80% { transform: translateX(4px); }
+        }
+
+        .conversion-confirmation {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 3px dotted rgba(27, 26, 46, 0.35);
+        }
+
+        .conversion-confirmation .solution-label { color: var(--ok-deep); }
+
+        .btn-check-step {
+            background: var(--accent-color);
+            color: var(--ink);
+            border: 3px solid var(--ink);
+            padding: 9px 20px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-left: auto;
+            box-shadow: 4px 4px 0 var(--ink);
+            transition: transform 0.12s, box-shadow 0.12s;
+        }
+
+        .btn-check-step:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--ink); }
+        .btn-check-step:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--ink); }
+
+        .btn-check-step:disabled {
+            background: #D5D3E6;
+            color: #6b6890;
+            border-color: #6b6890;
+            box-shadow: 3px 3px 0 #6b6890;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        /* ---------- Right sidebar: ruled notebook page ---------- */
+        .right-sidebar {
+            background-color: #FFFEFA;
+            background-image: repeating-linear-gradient(to bottom, transparent 0 26px, rgba(60, 110, 220, 0.2) 26px 28px);
+            border-left: 3px solid var(--ink);
+            display: flex;
+            flex-direction: column;
+            padding: 12px 10px 12px 12px;
+            gap: 12px;
+            min-height: 0;
+        }
+
+        .q-history-box {
+            display: flex;
+            flex-direction: column;
+            max-height: 46%;
+            min-height: 0;
+        }
+
+        .q-history-header,
+        .history-label {
+            display: inline-block;
+            align-self: flex-start;
+            font-family: var(--display);
+            font-size: 0.98rem;
+            line-height: 1.1;
+            color: var(--ink);
+            padding: 4px 12px;
+            border: 2.5px solid var(--ink);
+            border-radius: 10px;
+            box-shadow: 3px 3px 0 var(--ink);
+            transform: rotate(-1.5deg);
+            margin-bottom: 10px;
+        }
+
+        .q-history-header { background: var(--ok); }
+        .history-label { background: #FF8A9A; margin-bottom: 0; }
+
+        .q-history-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2px 6px 6px 2px;
+        }
+
+        .q-btn {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 6px;
+            width: 100%;
+            padding: 7px 10px;
+            margin-bottom: 10px;
+            background: #fff;
+            border: 2.5px solid var(--ink);
+            border-radius: 12px;
+            box-shadow: 3px 3px 0 var(--ok);
+            font-size: 0.85rem;
+            color: var(--ink);
+            font-weight: 700;
+            text-align: left;
+        }
+
+        .q-btn.active { background: var(--ok-tint); }
+
+        .q-btn-equation {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 72%;
+            font-weight: 600;
+        }
+
+        .q-status-tag {
+            font-size: 0.7rem;
+            background: var(--ok);
+            color: var(--ink);
+            border: 2px solid var(--ink);
+            padding: 0 8px;
+            border-radius: 999px;
+            font-weight: 700;
+        }
+
+        .q-status-tag::before { content: '\2713\00a0'; }
+
+        .q-history-list > div[style] { color: #55527f !important; }
+
+        .history-section {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+            padding: 2px 6px 8px 2px;
+        }
+
+        .history-header {
+            display: flex;
+            align-items: center;
+            border: 0;
+            padding: 0;
+            margin-bottom: 12px;
+        }
+
+        .history-item {
+            position: relative;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--bad-deep);
+            background: var(--bad-tint);
+            border: 2.5px solid var(--ink);
+            border-radius: 6px 6px 14px 6px;
+            padding: 8px 10px;
+            margin-bottom: 12px;
+            box-shadow: 3px 3px 0 var(--ink);
+            animation: popIn 0.3s ease-out;
+        }
+
+        .history-item:nth-child(odd) { rotate: -1deg; }
+        .history-item:nth-child(even) { rotate: 1.2deg; }
+
+        /* Tape on each sticky note */
+        .history-item::before {
+            content: '';
+            position: absolute;
+            top: -9px;
+            left: 50%;
+            width: 38px;
+            height: 13px;
+            background: rgba(255, 229, 92, 0.85);
+            border: 1.5px solid rgba(27, 26, 46, 0.35);
+            transform: translateX(-50%) rotate(-3deg);
+        }
+
+        #history-container:empty::after {
+            content: 'No slip-ups so far. Nice!';
+            display: block;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #46437a;
+            padding: 14px 8px;
+            background: rgba(255, 254, 250, 0.9);
+            border: 2.5px dashed rgba(27, 26, 46, 0.4);
+            border-radius: 12px;
+        }
+
+        /* ---------- Overlays & modals ---------- */
+        .overlay-screen {
+            position: fixed;
+            inset: 0;
+            background: rgba(27, 26, 46, 0.84);
+            z-index: 2000;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            flex-direction: column;
+            backdrop-filter: blur(4px);
+            padding: 16px;
+            overflow: auto;
+        }
+
+        .overlay-screen > :first-child { margin-top: auto; }
+        .overlay-screen > :last-child { margin-bottom: auto; }
+
+        /* Mentor selection: a full-screen notebook cover */
+        #selection-overlay {
+            background-color: #2A2466;
+            background-image:
+                url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='360'%20height='360'%3E%3Cg%20font-family='Arial%20Rounded%20MT%20Bold%2CArial%2Csans-serif'%20font-weight='900'%20fill='%23ffffff'%20fill-opacity='0.2'%3E%3Ctext%20x='30'%20y='80'%20font-size='56'%20transform='rotate%28-12%2030%2080%29'%3E%2B%3C/text%3E%3Ctext%20x='250'%20y='60'%20font-size='60'%20transform='rotate%2810%20250%2060%29'%3E%E2%88%92%3C/text%3E%3Ctext%20x='150'%20y='170'%20font-size='64'%20transform='rotate%2818%20150%20170%29'%3E%C3%97%3C/text%3E%3Ctext%20x='40'%20y='260'%20font-size='56'%20transform='rotate%28-8%2040%20260%29'%3E%C3%B7%3C/text%3E%3Ctext%20x='280'%20y='200'%20font-size='60'%20transform='rotate%28-14%20280%20200%29'%3E=%3C/text%3E%3Ctext%20x='200'%20y='320'%20font-size='52'%20transform='rotate%2812%20200%20320%29'%3E%25%3C/text%3E%3Ctext%20x='110'%20y='40'%20font-size='48'%20transform='rotate%28-6%20110%2040%29'%3E%CF%80%3C/text%3E%3Ctext%20x='320'%20y='330'%20font-size='52'%20transform='rotate%288%20320%20330%29'%3E%E2%88%9A%3C/text%3E%3Ctext%20x='20'%20y='170'%20font-size='44'%20transform='rotate%2814%2020%20170%29'%3E%3F%3C/text%3E%3Ctext%20x='300'%20y='120'%20font-size='44'%20transform='rotate%28-10%20300%20120%29'%3E%E2%88%91%3C/text%3E%3C/g%3E%3C/svg%3E"),
+                linear-gradient(rgba(255, 255, 255, 0.07) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.07) 2px, transparent 2px);
+            background-size: 360px 360px, 48px 48px, 48px 48px;
+            backdrop-filter: none;
+        }
+
+        .selection-title {
+            font-family: var(--display);
+            color: var(--hl);
+            font-size: clamp(2rem, 5vw, 3.4rem);
+            line-height: 1.05;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 3px 3px 0 #FF5FA2;
+        }
+
+        .traits-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+            max-width: 880px;
+            width: 92%;
+        }
+
+        .trait-card {
+            --c: #2196F3;
+            position: relative;
+            background: #fff;
+            border: 4px solid var(--ink);
+            border-radius: 22px;
+            padding: 18px 12px 16px;
+            text-align: center;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 8px 8px 0 var(--c);
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .trait-card:nth-child(odd) { transform: rotate(-1.5deg); }
+        .trait-card:nth-child(even) { transform: rotate(1.5deg); }
+
+        .trait-card:hover,
+        .trait-card:focus-visible {
+            transform: translate(-4px, -4px) rotate(0deg);
+            box-shadow: 13px 13px 0 var(--c);
+        }
+
+        .trait-card:focus-visible { outline: 4px solid var(--hl); outline-offset: 4px; }
+        .trait-card:active { transform: translate(4px, 4px); box-shadow: 3px 3px 0 var(--c); }
+
+        .trait-symbol {
+            width: 84px;
+            height: 84px;
+            display: grid;
+            place-items: center;
+            background: var(--c);
+            color: var(--ink);
+            border: 4px solid var(--ink);
+            border-radius: 50%;
+            font-family: var(--display);
+            font-size: 2.6rem;
+            line-height: 1;
+        }
+
+        .trait-name {
+            font-size: 1.12rem;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        /* Mastery popup */
+        .mastery-card,
+        .time-modal-card {
+            background: #fff;
+            border: 4px solid var(--ink);
+            border-radius: 28px;
+            box-shadow: 9px 9px 0 var(--accent-color);
+            width: 94%;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: popMasteryModal 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .mastery-card { max-width: 540px; padding: 18px 20px 20px; }
+        .time-modal-card { max-width: 480px; padding: 26px 28px 28px; }
+
+        @keyframes popMasteryModal {
+            0% { opacity: 0; transform: scale(0.85) translateY(20px) rotate(-1.5deg); }
+            100% { opacity: 1; transform: scale(1) translateY(0) rotate(0); }
+        }
+
+        .mastery-agent-container {
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            padding: 16px 16px 12px;
+            margin-bottom: 14px;
+            background: var(--accent-color);
+            border: 3px solid var(--ink);
+            border-radius: 20px;
+        }
+
+        .mastery-agent-container::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 62%;
+            width: 220%;
+            aspect-ratio: 1;
+            transform: translate(-50%, -50%);
+            background: repeating-conic-gradient(rgba(255, 255, 255, 0.22) 0 9deg, transparent 9deg 18deg);
+            animation: spinRays 70s linear infinite;
+            pointer-events: none;
+        }
+
+        .mastery-agent-container > * { position: relative; }
+
+        .mastery-speech-bubble { font-size: 1rem; }
+
+        .mastery-avatar-img {
+            width: 100%;
+            max-width: 220px;
+            height: 210px;
+            object-fit: contain;
+            filter: drop-shadow(3px 4px 0 rgba(27, 26, 46, 0.35));
+            animation: floatAvatar 3s ease-in-out infinite;
+        }
+
+        .mastery-destination {
+            width: 100%;
+            margin: 0 0 14px;
+            padding: 10px 14px;
+            border-radius: 14px;
+            background: var(--hl);
+            border: 3px solid var(--ink);
+            box-shadow: 3px 3px 0 var(--ink);
+            color: var(--ink);
+            font-size: 0.95rem;
+            font-weight: 700;
+            line-height: 1.35;
+        }
+
+        .mastery-topic-choice-wrap { width: 100%; margin: 0 0 14px; text-align: left; }
+
+        .mastery-topic-choice-wrap label {
+            display: block;
+            margin-bottom: 6px;
+            color: #46437a;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .mastery-topic-choice-wrap select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 3px solid var(--ink);
+            border-radius: 12px;
+            background: #fff;
+            color: var(--ink);
+            font: inherit;
+            font-weight: 700;
+            box-shadow: 3px 3px 0 var(--ink);
+            outline: none;
+        }
+
+        .mastery-topic-choice-wrap select:focus { background: #FFF3A6; }
+
+        .mastery-btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            width: 100%;
+        }
+
+        .mastery-btn,
+        .time-modal-btn {
+            padding: 13px 12px;
+            border-radius: 16px;
+            border: 3px solid var(--ink);
+            color: var(--ink);
+            font-weight: 700;
+            font-size: 1.05rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: 4px 4px 0 var(--ink);
+            transition: transform 0.12s, box-shadow 0.12s;
+        }
+
+        .mastery-btn:hover,
+        .time-modal-btn:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--ink); }
+
+        .mastery-btn:active,
+        .time-modal-btn:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--ink); }
+
+        .btn-topic-up { background: #58B8FF; }
+        .btn-topic-down { background: #FFB04D; }
+        .btn-agree { background: var(--ok); }
+        .btn-refuse { background: #FF8A9A; }
+
+        /* Time limit popup */
+        .time-modal-header {
+            font-family: var(--display);
+            font-size: 2.1rem;
+            line-height: 1.05;
+            color: var(--ink);
+            margin-bottom: 6px;
+            text-shadow: 3px 3px 0 var(--hl);
+        }
+
+        .time-modal-subtitle {
+            font-size: 1rem;
+            color: #46437a;
+            margin-bottom: 18px;
+            font-weight: 600;
+        }
+
+        .time-stats-grid {
+            width: 100%;
+            background: #FFF8D6;
+            border: 3px dashed var(--ink);
+            border-radius: 18px;
+            padding: 16px 18px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 11px;
+        }
+
+        .time-stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1rem;
+        }
+
+        .time-stat-label { font-weight: 600; color: #46437a; }
+        .time-stat-val { font-weight: 700; color: var(--ink); }
+
+        .status-badge {
+            padding: 2px 12px;
+            border-radius: 999px;
+            border: 2.5px solid var(--ink);
+            font-size: 0.88rem;
+            color: var(--ink);
+            background: var(--bad);
+            font-weight: 700;
+        }
+
+        .status-badge.passed { background: var(--ok); }
+
+        .time-modal-btn { width: 100%; background: var(--accent-color); }
+
+        /* ---------- Smaller screens ---------- */
+        @media (max-width: 1180px) {
+            .app-container { grid-template-columns: 46px var(--sidebar-width) minmax(0, 1fr) 200px; }
+            .header-title { font-size: 1.3rem; }
+        }
+
+        @media (max-height: 720px) {
+            .prompt-box { min-height: 64px; padding: 9px 12px; margin-bottom: 18px; }
+            .avatar-img { min-height: 90px; }
+        }
+
+        @media (max-width: 900px) {
+            body { height: auto; min-height: 100vh; overflow: auto; }
+            .app-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto auto;
+                flex: none;
+            }
+            .action-bar {
+                flex-direction: row;
+                justify-content: center;
+                padding: 8px 12px;
+                gap: 12px;
+            }
+            .action-bar::before {
+                writing-mode: horizontal-tb;
+                transform: none;
+                margin: 0 4px 0 0;
+            }
+            .left-sidebar {
+                height: 440px;
+                border-right: 0;
+                border-bottom: 3px solid var(--ink);
+            }
+            .center-panel { overflow: visible; padding: 14px 12px 18px; }
+            .right-sidebar { border-left: 0; border-top: 3px solid var(--ink); }
+            .q-history-box { max-height: none; }
+            .problem-header-block { padding: 18px 22px 22px; }
+            .traits-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+            .trait-symbol { width: 66px; height: 66px; font-size: 2rem; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.001ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.001ms !important;
+            }
+        }
+
+
+        /* =====================================================
+           VIDEO MENTOR SIDEBAR — dark classroom + halftone dots
+           Replaces the old colored sunburst/avatar screenshot.
+           ===================================================== */
+        .video-mentor-sidebar {
+            position: relative;
+            isolation: isolate;
+            overflow: hidden;
+            padding: 0;
+            background: #0d0c16;
+            border-right: 3px solid var(--ink);
+        }
+
+        /* Disable the old rotating rays from the previous sidebar design. */
+        .video-mentor-sidebar::before,
+        .video-mentor-sidebar::after {
+            content: none !important;
+        }
+
+        .mentor-bg-video {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center center;
+            transform: scale(1.025);
+            filter: brightness(0.58) saturate(0.82) contrast(1.08);
+            pointer-events: none;
+        }
+
+        /* The first layer darkens the edges; the second creates the small-dot
+           halftone texture seen across the user's PIA hero reference. */
+        .mentor-video-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            background-image:
+                radial-gradient(circle, rgba(8, 7, 14, 0.76) 1.15px, transparent 1.35px),
+                linear-gradient(180deg, rgba(13, 12, 22, 0.08) 0%, rgba(13, 12, 22, 0.12) 45%, rgba(13, 12, 22, 0.55) 100%),
+                radial-gradient(ellipse at center, transparent 35%, rgba(9, 8, 16, 0.58) 100%);
+            background-size: 5px 5px, 100% 100%, 100% 100%;
+            background-position: 0 0, 0 0, 0 0;
+        }
+
+        .video-copy-layer,
+        .video-hint-layer {
+            position: relative;
+            z-index: 3;
+        }
+
+        .video-copy-layer {
+            flex: 1;
+            min-height: 0;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 14px 14px 0;
+            margin: 0;
+        }
+
+        .mentor-agent-stage {
+            flex: 1;
+            min-height: 0;
+            width: 100%;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 18px 10px 0;
+            position: relative;
+        }
+
+        .mentor-agent-stage::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: 18px;
+            width: 74%;
+            height: 22px;
+            transform: translateX(-50%);
+            border-radius: 50%;
+            background: rgba(8, 7, 14, 0.48);
+            filter: blur(2px);
+            pointer-events: none;
+        }
+
+        .video-mentor-sidebar .mentor-overlay-avatar {
+            width: min(90%, 300px);
+            max-width: 100%;
+            max-height: min(64vh, 560px);
+            height: auto;
+            object-fit: contain;
+            object-position: center bottom;
+            display: block;
+            position: relative;
+            z-index: 2;
+            animation: floatAvatar 3s ease-in-out infinite;
+            filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.45));
+        }
+
+        .video-mentor-sidebar .mentor-overlay-avatar.talking {
+            animation: avatarTalk 0.4s ease-in-out infinite alternate;
+        }
+
+        /* Remove the old halo and floor-shadow pseudo elements. */
+        .video-copy-layer::before,
+        .video-copy-layer::after {
+            content: none !important;
+        }
+
+        .video-mentor-sidebar .prompt-box {
+            margin: 0;
+            width: 100%;
+            min-height: 82px;
+            background: rgba(255, 255, 255, 0.96);
+            border: 3px solid #171521;
+            border-radius: 20px;
+            color: #312d39;
+            box-shadow: 7px 7px 0 rgba(14, 12, 22, 0.96);
+            backdrop-filter: blur(5px);
+        }
+
+        .video-mentor-sidebar .prompt-box::before {
+            border-color: #171521 transparent;
+        }
+
+        .video-mentor-sidebar .prompt-box::after {
+            border-color: rgba(255, 255, 255, 0.96) transparent;
+        }
+
+        .video-hint-layer {
+            width: 100%;
+            margin-top: auto;
+            padding: 16px 14px 14px;
+            background: linear-gradient(180deg, transparent 0%, rgba(10, 9, 17, 0.58) 34%, rgba(10, 9, 17, 0.88) 100%);
+        }
+
+        .video-mentor-sidebar .hint-btn {
+            background: #CBFF31;
+            color: #15131E;
+            border-color: #15131E;
+            box-shadow: 5px 5px 0 #15131E;
+        }
+
+        .video-mentor-sidebar .hint-btn::before {
+            background: #15131E;
+            color: #CBFF31;
+        }
+
+        @media (max-width: 900px) {
+            .video-mentor-sidebar {
+                min-height: 440px;
+                height: 440px;
+            }
+
+            .mentor-bg-video {
+                object-position: center 48%;
+            }
+
+            .video-mentor-sidebar .mentor-overlay-avatar {
+                max-height: 260px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="selection-overlay" class="overlay-screen">
+        <div class="selection-title">Choose Your Learning Mentor</div>
+        <div id="personality-grid" class="traits-grid">
+            <div class="trait-card" role="button" tabindex="0" style="--c:#2196F3;" onclick="selectPersonality('openness')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectPersonality('openness')}">
+                <div class="trait-symbol" aria-hidden="true">π</div>
+                <div class="trait-name">Openness</div>
+            </div>
+            <div class="trait-card" role="button" tabindex="0" style="--c:#B983F5;" onclick="selectPersonality('conscientiousness')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectPersonality('conscientiousness')}">
+                <div class="trait-symbol" aria-hidden="true">∑</div>
+                <div class="trait-name">Conscientiousness</div>
+            </div>
+            <div class="trait-card" role="button" tabindex="0" style="--c:#FF9800;" onclick="selectPersonality('extraversion')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectPersonality('extraversion')}">
+                <div class="trait-symbol" aria-hidden="true">×</div>
+                <div class="trait-name">Extraversion</div>
+            </div>
+            <div class="trait-card" role="button" tabindex="0" style="--c:#4CAF50;" onclick="selectPersonality('agreeableness')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectPersonality('agreeableness')}">
+                <div class="trait-symbol" aria-hidden="true">+</div>
+                <div class="trait-name">Agreeableness</div>
+            </div>
+            <div class="trait-card" role="button" tabindex="0" style="--c:#FF5FA2;" onclick="selectPersonality('neuroticism')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectPersonality('neuroticism')}">
+                <div class="trait-symbol" aria-hidden="true">?</div>
+                <div class="trait-name">Neuroticism</div>
+            </div>
+            <div class="trait-card" role="button" tabindex="0" style="--c:#78909C;" onclick="selectPersonality('neutral')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectPersonality('neutral')}">
+                <div class="trait-symbol" aria-hidden="true">=</div>
+                <div class="trait-name">Neutral</div>
+            </div>
+        </div>
+    </div>
+
+    <header>
+        <div class="header-title">
+            <span class="logo-mark" aria-hidden="true">π</span>
+            <span>PIA Tutorial Assistant</span>
+        </div>
+        <div class="header-actions">
+            <!-- Timer Badge -->
+            <div class="timer-badge" id="timer-badge">
+                <span id="timer-display">--:--</span>
+            </div>
+            <button class="restart-btn" onclick="startOver()">Start Over</button>
+            <div class="student-badge" id="student-badge" style="display: none;">
+                <span id="student-badge-name">Student</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-container">
+
+        <div class="action-bar">
+            <div class="dot green" role="button" tabindex="0" onclick="changeTheme('green')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();changeTheme('green')}" title="Green Theme"></div>
+            <div class="dot blue" role="button" tabindex="0" onclick="changeTheme('blue')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();changeTheme('blue')}" title="Blue Theme"></div>
+            <div class="dot purple" role="button" tabindex="0" onclick="changeTheme('purple')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();changeTheme('purple')}" title="Purple Theme"></div>
+            <div class="dot red" role="button" tabindex="0" onclick="changeTheme('red')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();changeTheme('red')}" title="Red Theme"></div>
+            <div class="dot yellow" role="button" tabindex="0" onclick="changeTheme('yellow')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();changeTheme('yellow')}" title="Yellow Theme"></div>
+            <div class="dot orange" role="button" tabindex="0" onclick="changeTheme('orange')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();changeTheme('orange')}" title="Orange Theme"></div>
+            <div class="dot pink" role="button" tabindex="0" onclick="changeTheme('pink')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();changeTheme('pink')}" title="Pink Theme"></div>
+            <div class="dot midnight" role="button" tabindex="0" onclick="changeTheme('midnight')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();changeTheme('midnight')}" title="Dark Theme"></div>
+        </div>
+
+        <div class="left-sidebar video-mentor-sidebar">
+            <!-- Full-height classroom video replaces the old sunburst/avatar artwork.
+                 Keep hero-classroom-1080.mp4 in the same folder as this HTML file. -->
+            <video class="mentor-bg-video" autoplay muted loop playsinline preload="auto" aria-hidden="true">
+                <source src="hero-classroom-1080.mp4" type="video/mp4">
+            </video>
+
+            <!-- Halftone/dotted overlay inspired by the attached PIA hero reference. -->
+            <div class="mentor-video-overlay" aria-hidden="true"></div>
+
+            <div class="avatar-container video-copy-layer">
+                <div class="prompt-box" id="status-msg">
+                    Welcome! Let's solve some math problems step by step.
+                </div>
+
+                <div class="mentor-agent-stage">
+                    <img id="avatar-img" class="avatar-img mentor-overlay-avatar" src="" alt="Mentor Avatar">
+                </div>
+            </div>
+
+            <div class="hint-container video-hint-layer">
+                <button id="hint-btn" class="hint-btn" onclick="requestHint()">
+                    <span>Request Hint</span>
+                    <span id="hint-tier-label" style="font-size: 0.8rem; opacity: 0.9;"></span>
+                </button>
+            </div>
+        </div>
+
+        <div class="center-panel">
+            <div class="problem-header-block">
+                <div class="problem-label" id="topic-label">Topic 1: Finding Percentage</div>
+                <div class="problem-statement" id="problem-text">Loading problem...</div>
+            </div>
+
+            <div id="steps-container" class="steps-container">
+            </div>
+        </div>
+
+        <div class="right-sidebar">
+            <div class="q-history-box">
+                <div class="q-history-header">Solved Questions</div>
+                <div class="q-history-list" id="q-history-list"></div>
+            </div>
+
+            <div class="history-section">
+                <div class="history-header">
+                    <span class="history-label">Error Log</span>
+                </div>
+                <div id="history-container"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Time Limit Modal Popup -->
+    <div id="time-limit-modal" class="overlay-screen" style="display: none;">
+        <div class="time-modal-card">
+            <div class="time-modal-header" id="time-modal-title">Time's Up!</div>
+            <div class="time-modal-subtitle" id="time-modal-subtitle">Here is your problem summary</div>
+            
+            <div class="time-stats-grid">
+                <div class="time-stat-row">
+                    <span class="time-stat-label">Time Limit:</span>
+                    <span class="time-stat-val" id="modal-time-limit">--</span>
+                </div>
+                <div class="time-stat-row">
+                    <span class="time-stat-label">Time Started:</span>
+                    <span class="time-stat-val" id="modal-time-started">--:--:--</span>
+                </div>
+                <div class="time-stat-row">
+                    <span class="time-stat-label">Time Finished:</span>
+                    <span class="time-stat-val" id="modal-time-finished">--:--:--</span>
+                </div>
+                <div class="time-stat-row">
+                    <span class="time-stat-label">Time Spent:</span>
+                    <span class="time-stat-val" id="modal-time-spent">0s</span>
+                </div>
+            </div>
+
+            <button class="time-modal-btn" id="time-modal-action-btn" onclick="handleTimeModalClose()">Continue</button>
+        </div>
+    </div>
+
+    <!-- Darkened Overlay & Mastery Threshold Popup Modal -->
+    <div id="completion-modal" class="overlay-screen" style="display: none;">
+        <div class="mastery-card">
+            <div class="mastery-agent-container">
+                <div class="mastery-speech-bubble" id="mastery-agent-speech">
+                    A topic progression option is available.
+                </div>
+                <img id="mastery-avatar-img" class="mastery-avatar-img" src="" alt="Mentor Avatar">
+            </div>
+
+            <div id="mastery-destination" class="mastery-destination"></div>
+
+            <div class="mastery-btn-grid">
+                <button class="mastery-btn btn-agree" onclick="handleMasteryAction('ACCEPT')">
+                    Accept
+                </button>
+                <button class="mastery-btn btn-refuse" onclick="handleMasteryAction('REFUSE')">
+                    Refuse
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- SUPABASE SETUP ---
+        const SUPABASE_URL = "https://wixlsgprvnezbarvdjcc.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndpeGxzZ3Bydm5lemJhcnZkamNjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNTY4NjgsImV4cCI6MjA4ODczMjg2OH0.hZ9wqc-3XaQLD3pwLeRqKN7mNKDNTMej4XDLyb5dweY";
+        const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // --- THEMES CONFIGURATION ---
+        const THEMES = {
+            green: { gradient: 'linear-gradient(135deg, #a8e063 0%, #56ab2f 100%)', glass: '#FFFDF6', accent: '#4CAF50', glow: 'rgba(76, 175, 80, 0.4)' },
+            blue: { gradient: 'linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%)', glass: '#F0F8FF', accent: '#2196F3', glow: 'rgba(33, 150, 243, 0.4)' },
+            purple: { gradient: 'linear-gradient(135deg, #c31432 0%, #240b36 100%)', glass: '#FBF5F8', accent: '#B983F5', glow: 'rgba(185, 131, 245, 0.45)' },
+            red: { gradient: 'linear-gradient(135deg, #FF512F 0%, #DD2476 100%)', glass: '#FFF5F5', accent: '#FF5252', glow: 'rgba(255, 82, 82, 0.4)' },
+            yellow: { gradient: 'linear-gradient(135deg, #FFE000 0%, #799F0C 100%)', glass: '#FFFFF0', accent: '#FBC02D', glow: 'rgba(251, 192, 45, 0.4)' },
+            orange: { gradient: 'linear-gradient(135deg, #FF8008 0%, #FFC837 100%)', glass: '#FFF8F0', accent: '#e67e22', glow: 'rgba(230, 126, 34, 0.4)' },
+            pink: { gradient: 'linear-gradient(135deg, #FF9A9E 0%, #FECFEF 100%)', glass: '#FFF0F5', accent: '#FF5FA2', glow: 'rgba(255, 95, 162, 0.45)' },
+            midnight: { gradient: 'linear-gradient(135deg, #0F2027 0%, #203A43 50%, #2C5364 100%)', glass: '#F4F6F7', accent: '#3DD6F5', glow: 'rgba(61, 214, 245, 0.45)' }
+        };
+        // --- QUESTION BANK ---
+        // Production questions come only from Supabase. No hidden/sample fallback questions.
+        let questionBank = { topic1: [], topic2: [], topic3: [] };
+
+        // --- REQUIRED STEP COUNTS PER TOPIC ---
+        const REQUIRED_STEPS_BY_TOPIC = {
+            topic1: 2, // Finding Percentage
+            topic2: 3, // Percentage Increase
+            topic3: 3  // Percentage Decrease
+        };
+
+        function normalizeStepsForTopic(topicKey, steps) {
+            const required = REQUIRED_STEPS_BY_TOPIC[topicKey] || 1;
+            if (!Array.isArray(steps) || steps.length < required) return null;
+            return steps.slice(0, required);
+        }
+
+        function formatDerivedNumber(value) {
+            if (!Number.isFinite(value)) return "";
+            return String(Number(value.toFixed(10)));
+        }
+
+        function parseFinalNumericAnswer(value) {
+            const cleaned = String(value ?? "")
+                .replace(/,/g, "")
+                .replace(/%/g, "")
+                .replace(/[^0-9.+-]/g, "");
+            const parsed = parseFloat(cleaned);
+            return Number.isFinite(parsed) ? parsed : null;
+        }
+
+        function extractQuestionNumbers(questionText) {
+            const normalized = String(questionText || "").replace(/,/g, "");
+            const matches = normalized.match(/-?\d+(?:\.\d+)?%?/g) || [];
+            return matches
+                .map(token => ({
+                    value: parseFloat(token.replace('%', '')),
+                    isPercent: token.includes('%')
+                }))
+                .filter(item => Number.isFinite(item.value));
+        }
+
+        // Older database questions may predate the structured steps JSON.
+        // Keep the exact DB question, but derive the required learning steps from
+        // the values already present in that question instead of dropping the row.
+        function buildDerivedStepsForTopic(topicKey, row, defaultHint = "") {
+            const numbers = extractQuestionNumbers(row.question);
+            const finalNumeric = parseFinalNumericAnswer(row.final_answer);
+
+            if (topicKey === 'topic1') {
+                const pct = numbers.find(item => item.isPercent);
+                if (!pct || finalNumeric === null) return null;
+
+                const decimal = pct.value / 100;
+                return [
+                    {
+                        prompt: 'Step 1: Conversion',
+                        answer: formatDerivedNumber(decimal),
+                        hints: [
+                            defaultHint || 'Convert the percentage into decimal form.',
+                            `Divide ${pct.value} by 100.`,
+                            `${pct.value} / 100 = ${formatDerivedNumber(decimal)}`
+                        ]
+                    },
+                    {
+                        prompt: 'Step 2: Multiplication',
+                        answer: formatDerivedNumber(finalNumeric),
+                        hints: [
+                            'Multiply the decimal form by the whole value in the problem.',
+                            'Use the values given in the question.',
+                            `The final value is ${formatDerivedNumber(finalNumeric)}.`
+                        ]
+                    }
+                ];
+            }
+
+            if (topicKey === 'topic2' || topicKey === 'topic3') {
+                const plainNumbers = numbers.filter(item => !item.isPercent);
+                if (plainNumbers.length < 2) return null;
+
+                const original = plainNumbers[0].value;
+                const changed = plainNumbers[1].value;
+                if (!Number.isFinite(original) || original === 0 || !Number.isFinite(changed)) return null;
+
+                const difference = topicKey === 'topic2'
+                    ? changed - original
+                    : original - changed;
+                const ratio = difference / original;
+                const percentage = finalNumeric !== null ? finalNumeric : ratio * 100;
+                const changeWord = topicKey === 'topic2' ? 'increase' : 'decrease';
+
+                return [
+                    {
+                        prompt: 'Step 1: Subtraction',
+                        answer: formatDerivedNumber(difference),
+                        hints: [
+                            defaultHint || `Find the amount of ${changeWord}.`,
+                            topicKey === 'topic2'
+                                ? `Subtract ${original} from ${changed}.`
+                                : `Subtract ${changed} from ${original}.`,
+                            `The change is ${formatDerivedNumber(difference)}.`
+                        ]
+                    },
+                    {
+                        prompt: 'Step 2: Division',
+                        answer: formatDerivedNumber(ratio),
+                        hints: [
+                            `Divide the ${changeWord} amount by the original value.`,
+                            `${formatDerivedNumber(difference)} / ${formatDerivedNumber(original)}`,
+                            `${formatDerivedNumber(difference)} / ${formatDerivedNumber(original)} = ${formatDerivedNumber(ratio)}`
+                        ]
+                    },
+                    {
+                        prompt: 'Step 3: Conversion',
+                        answer: formatDerivedNumber(percentage),
+                        hints: [
+                            'Convert the decimal result into a percentage.',
+                            `Multiply ${formatDerivedNumber(ratio)} by 100.`,
+                            `${formatDerivedNumber(ratio)} * 100 = ${formatDerivedNumber(percentage)}%`
+                        ]
+                    }
+                ];
+            }
+
+            return null;
+        }
+
+        function mapDifficultyToTopic(difficulty) {
+            const diff = String(difficulty || '').trim().toUpperCase();
+            if (diff === 'EASY' || diff === 'TOPIC1' || diff === 'TOPIC 1') return 'topic1';
+            if (diff === 'MEDIUM' || diff === 'TOPIC2' || diff === 'TOPIC 2') return 'topic2';
+            if (diff === 'HARD' || diff === 'TOPIC3' || diff === 'TOPIC 3') return 'topic3';
+            return null;
+        }
+
+        // --- ADAPTIVE TOPIC RULES (synced from app_config) ---
+        const adaptiveConfigs = {
+            topic1: { masteryThreshold: 80, minQuestions: 3, maxErrors: 3 },
+            topic2: { masteryThreshold: 80, minQuestions: 3, maxErrors: 3 },
+            topic3: { masteryThreshold: 80, minQuestions: 3, maxErrors: 3 }
+        };
+
+        function makeTopicProgress() {
+            return {
+                completedQuestions: 0,
+                accurateQuestions: 0,
+                consecutiveFailedQuestions: 0
+            };
+        }
+
+        let topicProgress = {
+            topic1: makeTopicProgress(),
+            topic2: makeTopicProgress(),
+            topic3: makeTopicProgress()
+        };
+
+        let pendingAdaptiveAction = null; // { type: 'UPGRADE'|'DOWNGRADE', targetTopic: 'topicX' }
+
+        // --- TIMER & TIME LIMIT MANAGEMENT ---
+        const DEFAULT_TIME_LIMIT_SECONDS = 600; // Emergency fallback matches Admin default: 10 minutes
+        let syncedAdminTimeLimitSeconds = null; // Authoritative app_config.time_limit value
+        let timerInterval = null;
+        let timerDeadlineMs = null; // One continuous Canvas-style deadline for the whole learning session
+        let remainingSeconds = DEFAULT_TIME_LIMIT_SECONDS;
+        let currentProblemTimeLimit = DEFAULT_TIME_LIMIT_SECONDS;
+        let timeStartedDate = null;
+        let timeFinishedDate = null;
+        let isTimeExpired = false;
+
+        // Smart parser function to standardize time limits from DB (minutes, seconds, strings, formats)
+        function parseTimeLimitInSeconds(val, fallback = DEFAULT_TIME_LIMIT_SECONDS) {
+            if (val === null || val === undefined || val === '') return fallback;
+            
+            if (typeof val === 'number') {
+                if (val > 0 && val < 60) return Math.round(val * 60); // Intended as minutes (e.g. 5 mins -> 300s)
+                return Math.round(val);
+            }
+            
+            const str = String(val).trim().toLowerCase();
+            
+            // Format check for MM:SS or HH:MM:SS
+            if (str.includes(':')) {
+                const parts = str.split(':').map(p => parseInt(p, 10) || 0);
+                if (parts.length === 2) return parts[0] * 60 + parts[1];
+                if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+            }
+            
+            const num = parseFloat(str);
+            if (!isNaN(num) && num > 0) {
+                if (str.includes('m') || num < 60) {
+                    if (!str.includes('s') || str.includes('m')) {
+                        return Math.round(num * 60);
+                    }
+                }
+                return Math.round(num);
+            }
+            
+            return fallback;
+        }
+
+        function formatMMSS(totalSec) {
+            if (isNaN(totalSec) || totalSec < 0) totalSec = 0;
+            const mins = Math.floor(totalSec / 60);
+            const secs = totalSec % 60;
+            return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+
+        function formatSpentTime(startDate, endDate) {
+            if (!startDate || !endDate) return "0s";
+            const diffSec = Math.max(0, Math.round((endDate - startDate) / 1000));
+            const mins = Math.floor(diffSec / 60);
+            const secs = diffSec % 60;
+            if (mins === 0) return `${secs} sec${secs !== 1 ? 's' : ''}`;
+            return `${mins} min${mins > 1 ? 's' : ''} ${secs} sec${secs !== 1 ? 's' : ''}`;
+        }
+
+        function formatClockTime(date) {
+            if (!date) return "--:--:--";
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
+
+        function syncRemainingSecondsFromDeadline() {
+            if (!Number.isFinite(timerDeadlineMs)) return;
+            remainingSeconds = Math.max(0, Math.ceil((timerDeadlineMs - Date.now()) / 1000));
+        }
+
+        function ensureTimerInterval() {
+            if (timerInterval || isTimeExpired || remainingSeconds <= 0) return;
+
+            timerInterval = setInterval(() => {
+                syncRemainingSecondsFromDeadline();
+                updateTimerDisplay();
+
+                const badge = document.getElementById('timer-badge');
+                if (remainingSeconds <= 30 && badge) {
+                    badge.classList.add('warning');
+                }
+
+                if (remainingSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    timeFinishedDate = new Date();
+                    isTimeExpired = true;
+                    onTimeExpired();
+                }
+            }, 250);
+        }
+
+        function startProblemTimer(forceReset = false) {
+            // Canvas-style behavior: moving between questions or topics must not
+            // create a fresh timer. Reuse the same session deadline until time
+            // expires or the student explicitly starts over.
+            if (!forceReset && timeStartedDate && !isTimeExpired && Number.isFinite(timerDeadlineMs)) {
+                syncRemainingSecondsFromDeadline();
+                updateTimerDisplay();
+
+                const existingBadge = document.getElementById('timer-badge');
+                if (existingBadge) {
+                    existingBadge.classList.toggle('warning', remainingSeconds <= 30);
+                }
+
+                if (remainingSeconds <= 0) {
+                    timeFinishedDate = new Date();
+                    isTimeExpired = true;
+                    onTimeExpired();
+                    return;
+                }
+
+                ensureTimerInterval();
+                return;
+            }
+
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = null;
+
+            const questions = questionBank[state.currentTopic] || [];
+            const problem = questions[state.currentQuestionIndex];
+
+            // The Admin Math Task setting is the authoritative timer source.
+            // Only use a question-level value when app_config could not be loaded.
+            if (Number.isFinite(syncedAdminTimeLimitSeconds) && syncedAdminTimeLimitSeconds > 0) {
+                currentProblemTimeLimit = syncedAdminTimeLimitSeconds;
+            } else if (problem && problem.timeLimit) {
+                currentProblemTimeLimit = parseTimeLimitInSeconds(problem.timeLimit);
+            } else {
+                currentProblemTimeLimit = DEFAULT_TIME_LIMIT_SECONDS;
+            }
+
+            remainingSeconds = currentProblemTimeLimit;
+            timeStartedDate = new Date();
+            timeFinishedDate = null;
+            timerDeadlineMs = Date.now() + (currentProblemTimeLimit * 1000);
+            isTimeExpired = false;
+
+            updateTimerDisplay();
+
+            const badge = document.getElementById('timer-badge');
+            if (badge) badge.classList.remove('warning');
+
+            ensureTimerInterval();
+        }
+
+        function updateTimerDisplay() {
+            const timerDisplay = document.getElementById('timer-display');
+            if (timerDisplay) {
+                timerDisplay.innerText = formatMMSS(remainingSeconds);
+            }
+        }
+
+        function onTimeExpired() {
+            // Disable problem inputs
+            const inputs = document.querySelectorAll('.solution-input');
+            inputs.forEach(input => input.disabled = true);
+
+            const btns = document.querySelectorAll('.btn-check-step');
+            btns.forEach(btn => btn.disabled = true);
+
+            const trait = state.oceanTrait || 'neutral';
+            const activePersona = PERSONA_CONFIG[trait] || PERSONA_CONFIG.neutral;
+            speak("Time is up! Let me show your session summary.", 'sad', '#C62828');
+
+            const questions = questionBank[state.currentTopic] || [];
+            const problem = questions[state.currentQuestionIndex];
+
+            saveSessionData(
+                state.currentTopic,
+                state.stats[problem ? problem.id : 0],
+                currentProblemErrors + 1,
+                totalHintsUsedProblem
+            );
+
+            showTimeLimitModal("Time Expired", false);
+        }
+
+        function showTimeLimitModal(statusText, isPassed) {
+            const modal = document.getElementById('time-limit-modal');
+            if (!modal) return;
+
+            const limitMins = Math.floor(currentProblemTimeLimit / 60);
+            const limitSecs = currentProblemTimeLimit % 60;
+            const limitFormatted = limitMins > 0 
+                ? (limitSecs > 0 ? `${limitMins}m ${limitSecs}s` : `${limitMins} min${limitMins > 1 ? 's' : ''}`)
+                : `${limitSecs} secs`;
+
+            document.getElementById('modal-time-limit').innerText = limitFormatted;
+            document.getElementById('modal-time-started').innerText = formatClockTime(timeStartedDate);
+            document.getElementById('modal-time-finished').innerText = formatClockTime(timeFinishedDate);
+            document.getElementById('modal-time-spent').innerText = formatSpentTime(timeStartedDate, timeFinishedDate);
+
+            if (isPassed) {
+                document.getElementById('time-modal-title').innerText = 'Problem Completed!';
+                document.getElementById('time-modal-subtitle').innerText = 'Great job solving this problem!';
+                document.getElementById('time-modal-action-btn').innerText = 'Continue';
+            } else {
+                document.getElementById('time-modal-title').innerText = 'Time Limit Reached!';
+                document.getElementById('time-modal-subtitle').innerText = 'The session time limit has been reached.';
+                document.getElementById('time-modal-action-btn').innerText = 'Try Again';
+            }
+
+            modal.style.display = 'flex';
+        }
+
+        function handleTimeModalClose() {
+            const modal = document.getElementById('time-limit-modal');
+            if (modal) modal.style.display = 'none';
+
+            if (isTimeExpired) {
+                loadCurrentProblem();
+            } else {
+                evaluateTopicProgression();
+            }
+        }
+
+        // --- LOAD QUESTION BANK FROM SUPABASE ---
+        function shuffleQuestions(items) {
+            const shuffled = [...items];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        async function loadQuestionsFromDB() {
+            const loadedBank = { topic1: [], topic2: [], topic3: [] };
+
+            try {
+                const [{ data: questionRows, error: questionError }, { data: configRows, error: configError }] = await Promise.all([
+                    db.from('question_bank').select('*').order('id'),
+                    db.from('app_config').select('*').eq('id', 1).limit(1)
+                ]);
+
+                if (questionError) {
+                    console.error('Error loading question_bank from Supabase:', questionError);
+                    questionBank = loadedBank;
+                    return;
+                }
+
+                const appConfig = !configError && Array.isArray(configRows) && configRows.length > 0
+                    ? configRows[0]
+                    : null;
+
+                if (appConfig) {
+                    const minutes = Number(appConfig.time_limit);
+                    if (Number.isFinite(minutes) && minutes > 0) {
+                        syncedAdminTimeLimitSeconds = Math.round(minutes * 60);
+                        console.log(`Synced timer from app_config: ${minutes} minute(s)`);
+                    }
+
+                    const numberOr = (value, fallback) => {
+                        const parsed = Number(value);
+                        return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+                    };
+
+                    adaptiveConfigs.topic1 = {
+                        masteryThreshold: numberOr(appConfig.easy_mastery, 80),
+                        minQuestions: numberOr(appConfig.easy_min_questions, 3),
+                        maxErrors: numberOr(appConfig.easy_max_errors, 3)
+                    };
+                    adaptiveConfigs.topic2 = {
+                        masteryThreshold: numberOr(appConfig.medium_mastery, 80),
+                        minQuestions: numberOr(appConfig.medium_min_questions, 3),
+                        maxErrors: numberOr(appConfig.medium_max_errors, 3)
+                    };
+                    adaptiveConfigs.topic3 = {
+                        masteryThreshold: numberOr(appConfig.hard_mastery, 80),
+                        minQuestions: numberOr(appConfig.hard_min_questions, 3),
+                        maxErrors: numberOr(appConfig.hard_max_errors, 3)
+                    };
+                } else if (configError) {
+                    console.warn('Could not load app_config:', configError.message);
+                }
+
+                if (!Array.isArray(questionRows) || questionRows.length === 0) {
+                    questionBank = loadedBank;
+                    console.warn('No questions were returned from question_bank.');
+                    return;
+                }
+
+                questionRows.forEach(row => {
+                    const topicKey = mapDifficultyToTopic(row.difficulty);
+                    if (!topicKey) {
+                        console.warn(`Skipping question ${row.id}: unsupported difficulty "${row.difficulty}".`);
+                        return;
+                    }
+
+                    let parsedHint = { defaultHint: '', steps: [] };
+                    if (row.hint) {
+                        try {
+                            const parsed = JSON.parse(row.hint);
+                            if (typeof parsed === 'object' && parsed !== null) {
+                                parsedHint = {
+                                    defaultHint: parsed.defaultHint || '',
+                                    steps: Array.isArray(parsed.steps) ? parsed.steps : []
+                                };
+                            }
+                        } catch (e) {
+                            parsedHint.defaultHint = String(row.hint);
+                        }
+                    }
+
+                    let formattedSteps = [];
+                    if (parsedHint.steps.length > 0) {
+                        formattedSteps = parsedHint.steps.map(step => {
+                            const hints = [];
+                            if (step.hint1) hints.push(step.hint1);
+                            if (step.hint2) hints.push(step.hint2);
+                            if (step.hint3) hints.push(step.hint3);
+                            if (hints.length === 0 && Array.isArray(step.hints)) hints.push(...step.hints);
+
+                            return {
+                                prompt: step.prompt || step.stepPrompt || 'Solve step:',
+                                answer: step.answer ?? step.stepAnswer ?? '',
+                                hints: hints.length > 0
+                                    ? hints
+                                    : [parsedHint.defaultHint || 'Check your calculations carefully.']
+                            };
+                        });
+                    }
+
+                    let normalizedSteps = normalizeStepsForTopic(topicKey, formattedSteps);
+
+                    // Legacy rows in your existing DB often have question/final_answer/hint
+                    // but no structured steps yet. Derive the required 2/3 steps so the
+                    // exact question remains usable instead of silently disappearing.
+                    if (!normalizedSteps) {
+                        normalizedSteps = buildDerivedStepsForTopic(topicKey, row, parsedHint.defaultHint);
+                    }
+
+                    if (!normalizedSteps) {
+                        console.warn(`Skipping question ${row.id}: unable to build the required ${REQUIRED_STEPS_BY_TOPIC[topicKey]} steps from its saved data.`);
+                        return;
+                    }
+
+                    loadedBank[topicKey].push({
+                        id: row.id,
+                        question: row.question || '',
+                        timeLimit: Number.isFinite(syncedAdminTimeLimitSeconds)
+                            ? syncedAdminTimeLimitSeconds
+                            : DEFAULT_TIME_LIMIT_SECONDS,
+                        steps: normalizedSteps,
+                        points: Number(row.points) || 1
+                    });
+                });
+
+                questionBank = {
+                    topic1: shuffleQuestions(loadedBank.topic1),
+                    topic2: shuffleQuestions(loadedBank.topic2),
+                    topic3: shuffleQuestions(loadedBank.topic3)
+                };
+                console.log('Question Bank synchronized and shuffled:', {
+                    topic1: questionBank.topic1.length,
+                    topic2: questionBank.topic2.length,
+                    topic3: questionBank.topic3.length
+                });
+            } catch (err) {
+                questionBank = loadedBank;
+                console.error('Failed to synchronize Supabase question data:', err);
+            }
+        }
+
+        // --- PERSONAS CONFIGURATION ---
+        const PERSONA_CONFIG = {
+            openness: {
+                name: "Explorer Mentor",
+                images: { 
+                    default: "Personas/Openness/default.png", 
+                    happy: "Personas/Openness/happy.png", 
+                    sad: "Personas/Openness/sad.png",
+                    thinking: "Personas/Openness/default.png"
+                },
+                greet: [
+                    "Hey explorer! Let's discover fresh ways to crack this problem step by step!",
+                    "Math is just a puzzle waiting for us to unravel. Ready to explore?"
+                ],
+                correct: [
+                    "Brilliant insight! Your creative approach solved this step perfectly!",
+                    "Aha! That's the exact logic we were searching for. Brilliant job!"
+                ],
+                wrong: [
+                    "An interesting attempt! Let's look at this step from a different angle.",
+                    "Not quite, but every mistake opens up a new perspective! Let's re-examine."
+                ],
+                hint: [
+                    "Here's a clue to spark your imagination:",
+                    "Think about breaking the number down step by step:"
+                ],
+                mastery: "Amazing achievement! You have mastered this topic. Choose where you would like to continue."
+            },
+            conscientiousness: {
+                name: "Structured Guide",
+                images: { 
+                    default: "Personas/Conscientiousness/default.png", 
+                    happy: "Personas/Conscientiousness/happy.png", 
+                    sad: "Personas/Conscientiousness/sad.png",
+                    thinking: "Personas/Conscientiousness/default.png"
+                },
+                greet: [
+                    "Precision mode active. Let's work methodically through each problem step.",
+                    "Welcome! Double-check each detail, and we will achieve 100% accuracy."
+                ],
+                correct: [
+                    "Exact calculation! You executed this step with absolute precision.",
+                    "Structured and accurate. Perfect work on this computation!"
+                ],
+                wrong: [
+                    "Discrepancy detected in your answer. Verify your calculations and re-submit.",
+                    "There is a small arithmetic error in this step. Double-check your numbers carefully."
+                ],
+                hint: [
+                    "Systematic Hint:",
+                    "Follow the exact sequence carefully:"
+                ],
+                mastery: "Mastery threshold reached. All requirements are met. Choose where you would like to continue."
+            },
+            extraversion: {
+                name: "Energetic Coach",
+                images: { 
+                    default: "Personas/Extraverted/default.png", 
+                    happy: "Personas/Extraverted/happy.png", 
+                    sad: "Personas/Extraverted/sad.png",
+                    thinking: "Personas/Extraverted/default.png"
+                },
+                greet: [
+                    "Hey hey! Super pumped to solve these awesome math challenges with you today!",
+                    "Let me hear you say math! We're gonna crush these questions together!"
+                ],
+                correct: [
+                    "BOOM! You nailed it! Keep that high energy going!",
+                    "YESSS! That's what I'm talking about! Total genius power!"
+                ],
+                wrong: [
+                    "No worries at all! Shake it off and let me see you smash it on the next try!",
+                    "Almost there! Put your game face on, try once more!"
+                ],
+                hint: [
+                    "Pro-tip coming through!",
+                    "You got this! Here's a power hint:"
+                ],
+                mastery: "Mastery unlocked. You completed this topic. Choose where you would like to continue."
+            },
+            agreeableness: {
+                name: "Supportive Pal",
+                images: { 
+                    default: "PERSONAS/Agreeableness/default.png", 
+                    happy: "Personas/Agreeableness/happy.png", 
+                    sad: "Personas/Agreeableness/sad.png",
+                    thinking: "Personas/Agreeableness/test.gif"
+                },
+                greet: [
+                    "Hello my friend! I'm right here beside you, so take all the time you need.",
+                    "Don't worry about making mistakes—we'll support each other every step of the way!"
+                ],
+                correct: [
+                    "Wonderful job! I'm so proud of how hard you're working!",
+                    "You did so well! Your effort is truly paying off, keep going!"
+                ],
+                wrong: [
+                    "It's completely okay! Math can be tricky, so let's try it again together gently.",
+                    "Take a deep breath! Everyone makes mistakes, let's take a peaceful second look."
+                ],
+                hint: [
+                    "Here is a gentle hint for you:",
+                    "Don't stress! Here is a helpful tip:"
+                ],
+                mastery: "You achieved mastery. Choose where you would like to continue."
+            },
+            neuroticism: {
+                name: "Cautious Mentor",
+                images: { 
+                    default: "Personas/Neuroticsm/default.png", 
+                    happy: "Personas/Neuroticsm/happy.png", 
+                    sad: "Personas/Neuroticsm/sad.png",
+                    thinking: "Personas/Neuroticsm/default.png"
+                },
+                greet: [
+                    "Yikes, math problem ahead! Let's go really slow so we don't trip up.",
+                    "Take a calm breath... We can tackle this step without getting overwhelmed!"
+                ],
+                correct: [
+                    "Phew! That was a relief! Fantastic job getting that right!",
+                    "Oh good, we survived that step! Excellent work!"
+                ],
+                wrong: [
+                    "Oh dear, that wasn't right! Don't panic, let's carefully check where it went wrong.",
+                    "Eek! A small error slipped through. Let's fix it carefully before moving on!"
+                ],
+                hint: [
+                    "Be extra careful here:",
+                    "Don't rush! Check this clue:"
+                ],
+                mastery: "You reached mastery. Choose where you would like to continue."
+            },
+            neutral: {
+                name: "Standard Tutor",
+                images: { 
+                    default: "Personas/Agreeableness/default.png", 
+                    happy: "Personas/Agreeableness/happy.png", 
+                    sad: "Personas/Agreeableness/sad.png",
+                    thinking: "Personas/Agreeableness/default.png"
+                },
+                greet: ["Let's begin solving the mathematical problem."],
+                correct: ["Correct answer. Proceed to the next step."],
+                wrong: ["Incorrect input. Please recalculate and try again."],
+                hint: ["Here is a hint:"],
+                mastery: "Mastery criteria fulfilled. Choose where you would like to continue."
+            }
+        };
+
+        // --- STATE MANAGEMENT ---
+        let state = {
+            theme: 'green',
+            oceanTrait: null,
+            currentTopic: 'topic1',
+            currentQuestionIndex: 0,
+            currentStepIndex: 0,
+            solvedIds: [],
+            currentStepsTaken: [],
+            currentConversionChecks: [],
+            historyLog: [],
+            stats: {}
+        };
+
+        let stepWrongAttempts = 0;
+        let currentHintTier = 0;
+        let currentProblemErrors = 0;
+        let totalHintsUsedProblem = 0;
+        let pendingTopicChoice = null;
+
+        function getRandomLine(arr) {
+            if (!arr || arr.length === 0) return "";
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        // --- APP INITIALIZATION ---
+        async function initApp() {
+            await loadQuestionsFromDB();
+            await loadStudentBadge();
+            
+            changeTheme(state.theme || 'green');
+
+            if (!state.oceanTrait) {
+                document.getElementById('selection-overlay').style.display = 'flex';
+            } else {
+                document.getElementById('selection-overlay').style.display = 'none';
+                loadPersonality(state.oceanTrait);
+                loadCurrentProblem();
+            }
+        }
+
+        function selectPersonality(traitKey) {
+            state.oceanTrait = traitKey;
+            document.getElementById('selection-overlay').style.display = 'none';
+            loadPersonality(traitKey);
+            loadCurrentProblem();
+        }
+
+        function startOver() {
+            if (!confirm("Are you sure you want to start over? This will reset your current session progress.")) return;
+            
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = null;
+            timerDeadlineMs = null;
+            remainingSeconds = Number.isFinite(syncedAdminTimeLimitSeconds) && syncedAdminTimeLimitSeconds > 0
+                ? syncedAdminTimeLimitSeconds
+                : DEFAULT_TIME_LIMIT_SECONDS;
+            currentProblemTimeLimit = remainingSeconds;
+            timeStartedDate = null;
+            timeFinishedDate = null;
+            isTimeExpired = false;
+            updateTimerDisplay();
+
+            state.currentTopic = 'topic1';
+            state.currentQuestionIndex = 0;
+            state.currentStepIndex = 0;
+            state.solvedIds = [];
+            state.currentStepsTaken = [];
+            state.currentConversionChecks = [];
+            state.historyLog = [];
+            state.stats = {};
+            topicProgress = {
+                topic1: makeTopicProgress(),
+                topic2: makeTopicProgress(),
+                topic3: makeTopicProgress()
+            };
+            pendingAdaptiveAction = null;
+            stepWrongAttempts = 0;
+            currentHintTier = 0;
+            currentProblemErrors = 0;
+            totalHintsUsedProblem = 0;
+
+            document.getElementById('selection-overlay').style.display = 'flex';
+            document.getElementById('q-history-list').innerHTML = '';
+            document.getElementById('history-container').innerHTML = '';
+            document.getElementById('completion-modal').style.display = 'none';
+            document.getElementById('time-limit-modal').style.display = 'none';
+        }
+
+        function loadPersonality(traitKey) {
+            const config = PERSONA_CONFIG[traitKey] || PERSONA_CONFIG.neutral;
+            speak(getRandomLine(config.greet), 'default');
+        }
+
+        function speak(text, avatarState = 'default', speechColor = "#4A3E3D") {
+            const box = document.getElementById('status-msg');
+            const avatarImg = document.getElementById('avatar-img');
+
+            if (box) {
+                box.innerText = text;
+                box.style.color = speechColor;
+
+                box.classList.remove('speaking');
+                void box.offsetWidth; 
+                box.classList.add('speaking');
+            }
+
+            if (avatarImg) {
+                avatarImg.classList.add('talking');
+                setTimeout(() => {
+                    avatarImg.classList.remove('talking');
+                }, 1200);
+            }
+
+            setAvatarState(avatarState);
+        }
+
+        function setAvatarState(stateType) {
+            // The tutorial sidebar now uses a looping classroom video instead of
+            // swapping persona screenshots. Keep this guard so the same function
+            // remains compatible with any screen that still provides #avatar-img.
+            const imgEl = document.getElementById('avatar-img');
+            if (!imgEl) return;
+
+            const trait = state.oceanTrait || 'neutral';
+            const config = PERSONA_CONFIG[trait] || PERSONA_CONFIG.neutral;
+            
+            if (config.images && config.images[stateType]) {
+                imgEl.src = config.images[stateType];
+                imgEl.style.display = 'block';
+            }
+        }
+
+        function changeTheme(themeKey) {
+            const theme = THEMES[themeKey];
+            if (!theme) return;
+            state.theme = themeKey;
+            
+            document.documentElement.style.setProperty('--bg-gradient', theme.gradient);
+            document.documentElement.style.setProperty('--glass-bg', theme.glass);
+            document.documentElement.style.setProperty('--accent-color', theme.accent);
+            document.documentElement.style.setProperty('--accent-glow', theme.glow);
+            document.body.style.background = theme.gradient;
+        }
+
+        // --- PROBLEM WORKSPACE ENGINE ---
+        function loadCurrentProblem() {
+            const questions = questionBank[state.currentTopic] || [];
+
+            if (questions.length === 0) {
+                const topicTitles = {
+                    topic1: "Topic 1: Finding Percentage",
+                    topic2: "Topic 2: Percentage Increase",
+                    topic3: "Topic 3: Percentage Decrease"
+                };
+                document.getElementById('topic-label').innerText = topicTitles[state.currentTopic] || "Mathematics Module";
+                document.getElementById('problem-text').innerText = "No configured questions are available for this topic. Please ask the administrator to check the Question Bank.";
+                document.getElementById('steps-container').innerHTML = '';
+                document.getElementById('hint-btn').style.display = 'none';
+                return;
+            }
+
+            if (state.currentQuestionIndex >= questions.length || state.currentQuestionIndex < 0) {
+                state.currentQuestionIndex = 0;
+            }
+
+            const problem = questions[state.currentQuestionIndex];
+            if (!problem) return;
+
+            // Reset per-problem state variables
+            state.currentStepIndex = 0;
+            state.currentStepsTaken = [];
+            state.currentConversionChecks = [];
+            stepWrongAttempts = 0;
+            currentHintTier = 0;
+            currentProblemErrors = 0;
+            totalHintsUsedProblem = 0;
+
+            // Keep one continuous Canvas-style session timer across questions and topic changes.
+            startProblemTimer();
+
+            // Set UI texts
+            const topicTitles = {
+                topic1: "Topic 1: Finding Percentage",
+                topic2: "Topic 2: Percentage Increase",
+                topic3: "Topic 3: Percentage Decrease"
+            };
+            document.getElementById('topic-label').innerText = topicTitles[state.currentTopic] || "Mathematics Module";
+            document.getElementById('problem-text').innerText = problem.question;
+
+            // Hide hint button until student makes mistakes
+            document.getElementById('hint-btn').style.display = 'none';
+
+            renderUI();
+        }
+
+        function getStepDisplayLabel(topicKey, stepIdx) {
+            const labelsByTopic = {
+                topic1: ['Conversion', 'Multiplication'],
+                topic2: ['Subtraction', 'Division', 'Conversion'],
+                topic3: ['Subtraction', 'Division', 'Conversion']
+            };
+
+            const labels = labelsByTopic[topicKey] || [];
+            return labels[stepIdx] || `Step ${stepIdx + 1}`;
+        }
+
+        function isConversionStep(topicKey, stepIdx) {
+            return getStepDisplayLabel(topicKey, stepIdx) === 'Conversion';
+        }
+
+        function getConversionRequirement(topicKey) {
+            if (topicKey === 'topic1') {
+                return {
+                    type: 'decimal',
+                    label: 'Converted Decimal',
+                    prompt: 'Now write the converted decimal.',
+                    placeholder: 'e.g. 0.8',
+                    buttonLabel: 'Submit Conversion'
+                };
+            }
+
+            return {
+                type: 'percentage',
+                label: 'Final Percentage',
+                prompt: 'Now write the final percentage.',
+                placeholder: 'e.g. 20%',
+                buttonLabel: 'Submit Conversion'
+            };
+        }
+
+        // Every step accepts arithmetic work, but a step is only completed after the
+        // learner explicitly writes the final numeric value. Conversion steps keep
+        // their special decimal/percentage formatting requirements.
+        function getStepConfirmationRequirement(topicKey, stepIdx) {
+            if (isConversionStep(topicKey, stepIdx)) {
+                return getConversionRequirement(topicKey);
+            }
+
+            return {
+                type: 'number',
+                label: 'Final Answer',
+                prompt: 'Correct calculation. Now write the final answer.',
+                placeholder: 'Enter final value',
+                buttonLabel: 'Submit Final Answer'
+            };
+        }
+
+        function isPlainNumericLiteral(value) {
+            return /^[+-]?(?:\d+(?:\.\d+)?|\.\d+)$/.test(String(value ?? '').trim());
+        }
+
+        // Returns true when the learner typed working/calculation instead of only
+        // the final value. This is checked BEFORE grading the final-answer format,
+        // so expressions such as "0.3 x 30", "30 * 0.3", "80/100", or
+        // "50 - 20" can never complete a step by themselves.
+        function containsMathOperation(value) {
+            let raw = String(value ?? '').trim();
+            if (!raw) return false;
+
+            // Normalize common math symbols first.
+            raw = raw
+                .replace(/[×·]/g, '*')
+                .replace(/÷/g, '/')
+                .replace(/[−–—]/g, '-');
+
+            // Ignore one leading + or - because it may simply be the sign of a number.
+            const withoutLeadingSign = raw.replace(/^[+-]\s*/, '');
+
+            // x/X between values is multiplication. Other arithmetic operators,
+            // parentheses, or exponentiation mean the student entered working.
+            return /[*/^()]/.test(withoutLeadingSign)
+                || /\d\s*[xX]\s*(?:\d|\.)/.test(withoutLeadingSign)
+                || /(?:\d|\))\s*[+-]\s*(?:\d|\()/.test(withoutLeadingSign);
+        }
+
+        function isAlreadyFinalAnswerFormat(topicKey, stepIdx, value) {
+            const raw = String(value ?? '').trim();
+            const req = getStepConfirmationRequirement(topicKey, stepIdx);
+
+            if (req.type === 'percentage') {
+                return /^[+-]?(?:\d+(?:\.\d+)?|\.\d+)\s*%$/.test(raw);
+            }
+
+            // Decimal conversion and ordinary arithmetic steps both require a final
+            // numeric literal rather than an unevaluated expression such as 0.3 x 60.
+            return isPlainNumericLiteral(raw);
+        }
+
+        function normalizeMathExpression(value) {
+            let expr = String(value ?? '').trim();
+            if (!expr) return '';
+
+            expr = expr
+                .replace(/,/g, '')
+                .replace(/PHP/gi, '')
+                .replace(/₱/g, '')
+                .replace(/[×·]/g, '*')
+                .replace(/÷/g, '/')
+                .replace(/[−–—]/g, '-')
+                .replace(/%/g, '');
+
+            // Treat x between numeric/parenthesized terms as multiplication.
+            expr = expr.replace(/(\d|\))\s*[xX]\s*(\d|\()/g, '$1*$2');
+            return expr.trim();
+        }
+
+        function evaluateMathAnswer(value) {
+            const expr = normalizeMathExpression(value);
+            if (!expr) return null;
+
+            // Grade 7 arithmetic only: no variables, assignments, or functions.
+            if (!/^[0-9+\-*/^().\s]+$/.test(expr)) return null;
+
+            try {
+                if (typeof math === 'undefined' || typeof math.evaluate !== 'function') return null;
+
+                const result = math.evaluate(expr);
+                const numericResult = typeof result === 'number'
+                    ? result
+                    : (result && typeof result.toNumber === 'function' ? result.toNumber() : Number(result));
+
+                return Number.isFinite(numericResult) ? numericResult : null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function isCorrectMathValue(userValue, targetValue) {
+            const userNum = evaluateMathAnswer(userValue);
+            const targetNum = evaluateMathAnswer(targetValue);
+
+            if (userNum !== null && targetNum !== null) {
+                return Math.abs(userNum - targetNum) <= 0.001;
+            }
+
+            return String(userValue).trim().toLowerCase() === String(targetValue).trim().toLowerCase();
+        }
+
+        function renderUI() {
+            const questions = questionBank[state.currentTopic] || [];
+            const problem = questions[state.currentQuestionIndex];
+            if (!problem) return;
+
+            const stepsCont = document.getElementById('steps-container');
+            stepsCont.innerHTML = '';
+
+            // Keep every correctly completed step visible.
+            // The current unanswered step is appended directly below the last completed step.
+            problem.steps.forEach((step, idx) => {
+                if (idx > state.currentStepIndex) return;
+
+                const isCompleted = idx < state.currentStepIndex;
+                const isActive = idx === state.currentStepIndex;
+                const conversionState = state.currentConversionChecks[idx] || null;
+                const needsFinalConfirmation = isActive && conversionState?.stage === 'confirm';
+                const stepCard = document.createElement('div');
+
+                stepCard.className = `step-card ${isCompleted ? 'correct' : ''}`;
+                stepCard.id = `stepCard-${idx}`;
+
+                let contentHTML = `
+                    <div class="step-header">
+                        <div class="step-number-badge">${isCompleted ? 'Completed' : `Step ${idx + 1} of ${problem.steps.length}`}</div>
+                        <div class="step-title">Step ${idx + 1}: ${getStepDisplayLabel(state.currentTopic, idx)}</div>
+                    </div>
+                `;
+
+                if (isCompleted) {
+                    contentHTML += `
+                        <div class="solution-label">Your Step Solution</div>
+                        <div class="solution-input-row">
+                            <input type="text" class="solution-input" disabled value="${state.currentStepsTaken[idx] ?? ''}">
+                        </div>
+                    `;
+
+                    if (state.currentConversionChecks[idx]?.confirmedValue) {
+                        const req = getStepConfirmationRequirement(state.currentTopic, idx);
+                        contentHTML += `
+                            <div class="conversion-confirmation">
+                                <div class="solution-label">${req.label}</div>
+                                <div class="solution-input-row">
+                                    <input type="text" class="solution-input" disabled value="${state.currentConversionChecks[idx].confirmedValue}">
+                                </div>
+                            </div>
+                        `;
+                    }
+                } else if (needsFinalConfirmation) {
+                    const req = getStepConfirmationRequirement(state.currentTopic, idx);
+                    contentHTML += `
+                        <div class="solution-label">Your Step Solution</div>
+                        <div class="solution-input-row">
+                            <input type="text" class="solution-input" disabled value="${conversionState.expression}">
+                        </div>
+                        <div class="feedback-msg correct" style="margin-top:10px;">Correct calculation.</div>
+
+                        <div class="conversion-confirmation">
+                            <div class="solution-label">${req.prompt}</div>
+                            <div class="solution-input-row">
+                                <input type="text" id="conversion-input-${idx}" class="solution-input" placeholder="${req.placeholder}" onkeydown="if(event.key === 'Enter') checkFinalAnswer(${idx})">
+                            </div>
+                            <div class="step-footer">
+                                <div class="feedback-msg" id="conversion-feedback-${idx}"></div>
+                                <button class="btn-check-step" onclick="checkFinalAnswer(${idx})">${req.buttonLabel}</button>
+                            </div>
+                        </div>
+                    `;
+                } else if (isActive) {
+                    contentHTML += `
+                        <div class="solution-label">Your Step Solution</div>
+                        <div class="solution-input-row">
+                            <input type="text" id="step-input-${idx}" class="solution-input" placeholder="Enter answer" onkeydown="if(event.key === 'Enter') checkStep(${idx})">
+                        </div>
+                        <div class="step-footer">
+                            <div class="feedback-msg" id="step-feedback-${idx}"></div>
+                            <button class="btn-check-step" onclick="checkStep(${idx})">Submit Step</button>
+                        </div>
+                    `;
+                }
+
+                stepCard.innerHTML = contentHTML;
+                stepsCont.appendChild(stepCard);
+            });
+
+            // Focus and bring the newly revealed input into view.
+            setTimeout(() => {
+                const activeIdx = state.currentStepIndex;
+                const conversionInput = document.getElementById(`conversion-input-${activeIdx}`);
+                const normalInput = document.getElementById(`step-input-${activeIdx}`);
+                const cardEl = document.getElementById(`stepCard-${activeIdx}`);
+                const targetInput = conversionInput || normalInput;
+
+                if (targetInput) targetInput.focus();
+                if (cardEl && activeIdx > 0) {
+                    cardEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }, 50);
+        }
+
+        // --- STEP EVALUATION ---
+        async function checkStep(stepIdx) {
+            const questions = questionBank[state.currentTopic] || [];
+            const problem = questions[state.currentQuestionIndex];
+            if (!problem) return;
+
+            const step = problem.steps[stepIdx];
+            const inputEl = document.getElementById(`step-input-${stepIdx}`);
+            const feedbackEl = document.getElementById(`step-feedback-${stepIdx}`);
+            if (!inputEl) return;
+
+            const userAnsStr = inputEl.value.trim();
+            if (userAnsStr === '') return;
+
+            const isCorrect = isCorrectMathValue(userAnsStr, step.answer);
+            const trait = state.oceanTrait || 'neutral';
+            const activePersona = PERSONA_CONFIG[trait] || PERSONA_CONFIG.neutral;
+
+            if (isCorrect) {
+                const req = getStepConfirmationRequirement(state.currentTopic, stepIdx);
+                const hasWorking = containsMathOperation(userAnsStr);
+                const alreadyFinal = !hasWorking && isAlreadyFinalAnswerFormat(state.currentTopic, stepIdx, userAnsStr);
+
+                // IMPORTANT: correct arithmetic working is NOT the final submitted answer.
+                // If any calculation/operator is present, keep this step open and reveal
+                // a second field. Example: "0.3 x 30" evaluates to 9, but the learner
+                // must still type "9" before Step 2 can be completed.
+                if (hasWorking) {
+                    state.currentConversionChecks[stepIdx] = {
+                        stage: 'confirm',
+                        expression: userAnsStr,
+                        confirmedValue: '',
+                        directFinal: false
+                    };
+                    stepWrongAttempts = 0;
+                    currentHintTier = 0;
+
+                    speak(req.prompt, 'happy', '#2E7D32');
+                    renderUI();
+                    return;
+                }
+
+                // Only a final value written by itself completes the step immediately.
+                // Examples: 18, 0.3, .8, or 20% on a percentage-conversion step.
+                if (alreadyFinal) {
+                    let normalizedFinalValue = userAnsStr;
+
+                    if (req.type === 'percentage') {
+                        const numericValue = Number(userAnsStr.replace('%', '').trim());
+                        if (Number.isFinite(numericValue)) {
+                            normalizedFinalValue = `${formatDerivedNumber(numericValue)}%`;
+                        }
+                    } else {
+                        const numericValue = evaluateMathAnswer(userAnsStr);
+                        if (numericValue !== null) {
+                            normalizedFinalValue = formatDerivedNumber(numericValue);
+                        }
+                    }
+
+                    state.currentConversionChecks[stepIdx] = {
+                        stage: 'complete',
+                        expression: userAnsStr,
+                        confirmedValue: '',
+                        directFinal: true
+                    };
+
+                    completeCurrentStep(stepIdx, normalizedFinalValue, activePersona);
+                    return;
+                }
+
+                // A mathematically correct input that is not in the required final format
+                // must also be confirmed in the second field rather than completing.
+                state.currentConversionChecks[stepIdx] = {
+                    stage: 'confirm',
+                    expression: userAnsStr,
+                    confirmedValue: '',
+                    directFinal: false
+                };
+                stepWrongAttempts = 0;
+                currentHintTier = 0;
+
+                speak(req.prompt, 'happy', '#2E7D32');
+                renderUI();
+                return;
+            } else {
+                registerStepError(stepIdx, userAnsStr, feedbackEl, activePersona);
+            }
+        }
+
+        function checkFinalAnswer(stepIdx) {
+            const questions = questionBank[state.currentTopic] || [];
+            const problem = questions[state.currentQuestionIndex];
+            if (!problem) return;
+
+            const step = problem.steps[stepIdx];
+            const inputEl = document.getElementById(`conversion-input-${stepIdx}`);
+            const feedbackEl = document.getElementById(`conversion-feedback-${stepIdx}`);
+            if (!inputEl || !feedbackEl) return;
+
+            const userValue = inputEl.value.trim();
+            if (!userValue) return;
+
+            const req = getStepConfirmationRequirement(state.currentTopic, stepIdx);
+            const targetNum = evaluateMathAnswer(step.answer);
+            let formatIsCorrect = false;
+            let userNum = null;
+
+            if (req.type === 'percentage') {
+                formatIsCorrect = /^[+-]?(?:\d+(?:\.\d+)?|\.\d+)\s*%$/.test(userValue);
+                userNum = formatIsCorrect ? Number(userValue.replace('%', '').trim()) : null;
+            } else {
+                // The confirmation field must contain the final numeric value only,
+                // not another arithmetic expression.
+                formatIsCorrect = isPlainNumericLiteral(userValue);
+                userNum = formatIsCorrect ? Number(userValue) : null;
+            }
+
+            const valueIsCorrect = formatIsCorrect && Number.isFinite(userNum) && targetNum !== null
+                && Math.abs(userNum - targetNum) <= 0.001;
+
+            const trait = state.oceanTrait || 'neutral';
+            const activePersona = PERSONA_CONFIG[trait] || PERSONA_CONFIG.neutral;
+
+            if (valueIsCorrect) {
+                feedbackEl.className = 'feedback-msg correct';
+                feedbackEl.innerText = isConversionStep(state.currentTopic, stepIdx)
+                    ? 'Correct conversion!'
+                    : 'Correct final answer!';
+
+                const confirmationState = state.currentConversionChecks[stepIdx] || {};
+                confirmationState.stage = 'complete';
+
+                if (req.type === 'percentage') {
+                    confirmationState.confirmedValue = `${formatDerivedNumber(userNum)}%`;
+                } else {
+                    confirmationState.confirmedValue = formatDerivedNumber(userNum);
+                }
+
+                state.currentConversionChecks[stepIdx] = confirmationState;
+                completeCurrentStep(stepIdx, confirmationState.expression || confirmationState.confirmedValue, activePersona);
+                return;
+            }
+
+            stepWrongAttempts++;
+            currentProblemErrors++;
+            feedbackEl.className = 'feedback-msg wrong';
+
+            if (req.type === 'percentage') {
+                feedbackEl.innerText = 'Enter the final percentage with the % sign.';
+            } else if (req.type === 'decimal') {
+                feedbackEl.innerText = 'Enter the converted decimal value only.';
+            } else {
+                feedbackEl.innerText = 'Enter the final numeric answer only, not the calculation.';
+            }
+
+            speak(getRandomLine(activePersona.wrong), 'sad', '#C62828');
+            state.historyLog.push(`Step ${stepIdx + 1}: Final-answer error on "${userValue}"`);
+            renderAttemptLog();
+
+            const rules = getAdminRules();
+            if (stepWrongAttempts >= rules.attemptsBeforeHint) {
+                const hintBtn = document.getElementById('hint-btn');
+                if (hintBtn) hintBtn.style.display = 'flex';
+            }
+        }
+
+        function registerStepError(stepIdx, userAnsStr, feedbackEl, activePersona) {
+            stepWrongAttempts++;
+            currentProblemErrors++;
+
+            if (feedbackEl) {
+                feedbackEl.className = 'feedback-msg wrong';
+                feedbackEl.innerText = 'Incorrect answer. Try again.';
+            }
+
+            speak(getRandomLine(activePersona.wrong), 'sad', '#C62828');
+            state.historyLog.push(`Step ${stepIdx + 1}: Error on "${userAnsStr}"`);
+            renderAttemptLog();
+
+            const rules = getAdminRules();
+            if (stepWrongAttempts >= rules.attemptsBeforeHint) {
+                const hintBtn = document.getElementById('hint-btn');
+                if (hintBtn) hintBtn.style.display = 'flex';
+            }
+        }
+
+        function completeCurrentStep(stepIdx, recordedAnswer, activePersona) {
+            const questions = questionBank[state.currentTopic] || [];
+            const problem = questions[state.currentQuestionIndex];
+            if (!problem) return;
+
+            state.currentStepsTaken[stepIdx] = recordedAnswer;
+            stepWrongAttempts = 0;
+            currentHintTier = 0;
+
+            speak(getRandomLine(activePersona.correct), 'happy', '#2E7D32');
+
+            if (state.currentStepIndex + 1 < problem.steps.length) {
+                state.currentStepIndex++;
+                renderUI();
+                return;
+            }
+
+            // The session timer intentionally keeps running here.
+            // Completing a question or changing topics must not reset or pause it.
+            if (!state.solvedIds.includes(problem.id)) {
+                state.solvedIds.push(problem.id);
+            }
+            renderQuestionHistory();
+
+            try {
+                confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+            } catch(e){}
+
+            saveSessionData(
+                state.currentTopic,
+                state.stats[problem.id],
+                currentProblemErrors,
+                totalHintsUsedProblem
+            );
+
+            // Evaluate upgrade/downgrade rules only after the whole question is completed.
+            // A question counts as accurate only when it was completed without any incorrect submissions.
+            setTimeout(() => {
+                completeQuestionAndEvaluateAdaptiveRules();
+            }, 650);
+        }
+
+        function getAdminRules() {
+            return { attemptsBeforeHint: 2 };
+        }
+
+        // --- MULTI-TIERED HINT SYSTEM ---
+        function requestHint() {
+            const questions = questionBank[state.currentTopic] || [];
+            const problem = questions[state.currentQuestionIndex];
+            if (!problem) return;
+
+            const step = problem.steps[state.currentStepIndex];
+            if (!step) return;
+
+            totalHintsUsedProblem++;
+            
+            let hintsArr = step.hints;
+            if (!hintsArr || !Array.isArray(hintsArr) || hintsArr.length === 0) {
+                hintsArr = ["Review the step prompt and double-check your arithmetic."];
+            }
+
+            if (currentHintTier < hintsArr.length) {
+                currentHintTier++;
+            }
+
+            const activeHintText = hintsArr[currentHintTier - 1];
+            const trait = state.oceanTrait || 'neutral';
+            const activePersona = PERSONA_CONFIG[trait] || PERSONA_CONFIG.neutral;
+            const personaHintPrefix = getRandomLine(activePersona.hint || ["Here is a helpful tip:"]);
+
+            speak(`${personaHintPrefix} ${activeHintText}`, 'thinking', '#D84315');
+
+            document.getElementById('hint-tier-label').innerText = `(Tier ${currentHintTier}/${hintsArr.length})`;
+        }
+
+        // --- ADAPTIVE TOPIC PROGRESSION ---
+        // Upgrade and downgrade are independent triggers.
+        // Upgrade: enough completed questions AND accuracy >= mastery threshold.
+        // Downgrade: configured number of consecutive unsuccessful questions.
+        // Topic 1 never downgrades; Topic 3 never upgrades.
+
+        function getTopicAccuracy(topicKey) {
+            const progress = topicProgress[topicKey] || makeTopicProgress();
+            if (progress.completedQuestions <= 0) return 0;
+            return (progress.accurateQuestions / progress.completedQuestions) * 100;
+        }
+
+        function resetTopicProgress(topicKey) {
+            topicProgress[topicKey] = makeTopicProgress();
+        }
+
+        function advanceToNextQuestion() {
+            const topicKey = state.currentTopic;
+            const questions = questionBank[topicKey] || [];
+            if (questions.length === 0) {
+                loadCurrentProblem();
+                return;
+            }
+
+            // Use every question once in a randomized order before starting a new cycle.
+            if (state.currentQuestionIndex >= questions.length - 1) {
+                const previousId = questions[state.currentQuestionIndex]?.id;
+                const reshuffled = shuffleQuestions(questions);
+
+                // Avoid showing the same question twice in a row across shuffle cycles.
+                if (reshuffled.length > 1 && reshuffled[0]?.id === previousId) {
+                    [reshuffled[0], reshuffled[1]] = [reshuffled[1], reshuffled[0]];
+                }
+
+                questionBank[topicKey] = reshuffled;
+                state.currentQuestionIndex = 0;
+            } else {
+                state.currentQuestionIndex += 1;
+            }
+
+            loadCurrentProblem();
+        }
+
+        function evaluateTopicProgression() {
+            // Kept as a compatibility wrapper for existing calls such as the time-limit modal.
+            advanceToNextQuestion();
+        }
+
+        function completeQuestionAndEvaluateAdaptiveRules() {
+            const topicKey = state.currentTopic;
+            const cfg = adaptiveConfigs[topicKey] || { masteryThreshold: 80, minQuestions: 3, maxErrors: 3 };
+            const progress = topicProgress[topicKey] || makeTopicProgress();
+            const wasAccurate = currentProblemErrors === 0;
+
+            progress.completedQuestions += 1;
+
+            if (wasAccurate) {
+                progress.accurateQuestions += 1;
+                progress.consecutiveFailedQuestions = 0;
+            } else {
+                progress.consecutiveFailedQuestions += 1;
+            }
+
+            topicProgress[topicKey] = progress;
+
+            // Downgrade is checked independently and first. Topic 1 cannot downgrade.
+            if (topicKey !== 'topic1' && progress.consecutiveFailedQuestions >= cfg.maxErrors) {
+                const targetTopic = topicKey === 'topic3' ? 'topic2' : 'topic1';
+                showAdaptivePopup('DOWNGRADE', targetTopic);
+                return;
+            }
+
+            // Upgrade requires both the configured question count and mastery accuracy.
+            // Topic 3 is the highest topic and cannot upgrade.
+            const accuracy = getTopicAccuracy(topicKey);
+            if (
+                topicKey !== 'topic3' &&
+                progress.completedQuestions >= cfg.minQuestions &&
+                accuracy >= cfg.masteryThreshold
+            ) {
+                const targetTopic = topicKey === 'topic1' ? 'topic2' : 'topic3';
+                showAdaptivePopup('UPGRADE', targetTopic);
+                return;
+            }
+
+            advanceToNextQuestion();
+        }
+
+        function getTopicName(topicKey) {
+            const names = {
+                topic1: 'Topic 1 - Finding Percentage',
+                topic2: 'Topic 2 - Percentage Increase',
+                topic3: 'Topic 3 - Percentage Decrease'
+            };
+            return names[topicKey] || topicKey;
+        }
+
+        function showAdaptivePopup(type, targetTopic) {
+            const trait = state.oceanTrait || 'neutral';
+            const activePersona = PERSONA_CONFIG[trait] || PERSONA_CONFIG.neutral;
+            const speechEl = document.getElementById('mastery-agent-speech');
+            const avatarImgEl = document.getElementById('mastery-avatar-img');
+            const destinationEl = document.getElementById('mastery-destination');
+            const cfg = adaptiveConfigs[state.currentTopic];
+            const progress = topicProgress[state.currentTopic];
+
+            pendingAdaptiveAction = { type, targetTopic };
+            pendingTopicChoice = targetTopic;
+
+            if (avatarImgEl && activePersona.images) {
+                avatarImgEl.src = type === 'UPGRADE'
+                    ? (activePersona.images.happy || activePersona.images.default)
+                    : (activePersona.images.thinking || activePersona.images.default);
+            }
+
+            if (type === 'UPGRADE') {
+                const accuracy = Math.round(getTopicAccuracy(state.currentTopic));
+                if (speechEl) {
+                    speechEl.innerText = `You completed ${progress.completedQuestions} questions with ${accuracy}% accuracy, meeting the ${cfg.masteryThreshold}% mastery requirement. Would you like to continue to ${getTopicName(targetTopic)}?`;
+                }
+                if (destinationEl) {
+                    destinationEl.innerText = `Available progression: ${getTopicName(targetTopic)}`;
+                }
+            } else {
+                if (speechEl) {
+                    speechEl.innerText = `You reached ${progress.consecutiveFailedQuestions} consecutive unsuccessful questions. Would you like to return to ${getTopicName(targetTopic)} for review?`;
+                }
+                if (destinationEl) {
+                    destinationEl.innerText = `Recommended review: ${getTopicName(targetTopic)}`;
+                }
+            }
+
+            document.getElementById('completion-modal').style.display = 'flex';
+        }
+
+        function handleMasteryAction(action) {
+            if (!pendingAdaptiveAction) {
+                document.getElementById('completion-modal').style.display = 'none';
+                return;
+            }
+
+            const { type, targetTopic } = pendingAdaptiveAction;
+
+            if (action === 'ACCEPT') {
+                state.currentTopic = targetTopic;
+                state.currentQuestionIndex = 0;
+
+                // A new topic begins with a fresh adaptive evaluation window.
+                // The overall Canvas-style session timer continues unchanged.
+                resetTopicProgress(targetTopic);
+
+                pendingAdaptiveAction = null;
+                pendingTopicChoice = null;
+                document.getElementById('completion-modal').style.display = 'none';
+                loadCurrentProblem();
+                return;
+            }
+
+            if (action === 'REFUSE') {
+                if (type === 'UPGRADE') {
+                    // Start a fresh mastery window so the same popup does not repeat after one question.
+                    resetTopicProgress(state.currentTopic);
+                } else {
+                    // Staying at the current topic starts a fresh consecutive-failure streak.
+                    topicProgress[state.currentTopic].consecutiveFailedQuestions = 0;
+                }
+
+                pendingAdaptiveAction = null;
+                pendingTopicChoice = null;
+                document.getElementById('completion-modal').style.display = 'none';
+                advanceToNextQuestion();
+            }
+        }
+
+        // --- SESSION LOGGING TO SUPABASE ---
+        async function saveSessionData(topic, stats, totalErrors, hintsUsed) {
+            const studentId = localStorage.getItem('pia_student_id');
+            if (!studentId) return;
+
+            const sid = parseInt(studentId);
+            if (isNaN(sid)) return;
+
+            try {
+                const totalTimeSec = timeStartedDate ? Math.round(((timeFinishedDate || new Date()) - timeStartedDate) / 1000) : 0;
+                const currentRules = adaptiveConfigs[topic] || { masteryThreshold: 80, maxErrors: 3 };
+                const isPassed = totalErrors < currentRules.maxErrors && !isTimeExpired;
+
+                const { error } = await db.from('student_sessions').insert([{
+                    student_id: sid,
+                    topic: topic,
+                    score: isPassed ? 100 : 50,
+                    mastery_threshold: currentRules.masteryThreshold,
+                    status: isPassed ? 'PASSED' : 'FAILED',
+                    total_time_seconds: totalTimeSec,
+                    personality: state.oceanTrait || 'neutral',
+                    errors_count: totalErrors,
+                    hints_used: hintsUsed
+                }]);
+
+                if (error) console.error('Supabase Session Log Error:', error);
+            } catch (e) {
+                console.warn('Database session save error:', e);
+            }
+        }
+
+        async function loadStudentBadge() {
+            const studentId = localStorage.getItem('pia_student_id');
+            if (!studentId) {
+                document.getElementById('student-badge-name').textContent = 'Guest Student';
+                document.getElementById('student-badge').style.display = 'flex';
+                return;
+            }
+
+            const sid = parseInt(studentId);
+            if (isNaN(sid)) return;
+
+            try {
+                const { data } = await db.from('students').select('id, name').eq('id', sid).single();
+                if (data && data.name) {
+                    document.getElementById('student-badge-name').textContent = data.name;
+                    document.getElementById('student-badge').style.display = 'flex';
+                }
+            } catch(e) {}
+        }
+
+        // --- RENDER SOLVED QUESTIONS & HISTORY LOGS ---
+        function renderQuestionHistory() {
+            const list = document.getElementById('q-history-list');
+            list.innerHTML = '';
+            
+            const questions = questionBank[state.currentTopic] || [];
+            const solvedQuestions = questions.filter(q => state.solvedIds.includes(q.id));
+
+            if (solvedQuestions.length === 0) {
+                list.innerHTML = `<div style="font-size: 0.8rem; color: #90A4AE; text-align: center; padding: 12px 0; font-weight: 600;">No solved questions yet</div>`;
+                return;
+            }
+
+            solvedQuestions.forEach((q) => {
+                const btn = document.createElement('div');
+                btn.className = 'q-btn active';
+                btn.innerHTML = `<span class="q-btn-equation">${q.question}</span> <span class="q-status-tag">Solved</span>`;
+                list.appendChild(btn);
+            });
+        }
+
+        function renderAttemptLog() {
+            const container = document.getElementById('history-container');
+            container.innerHTML = '';
+            state.historyLog.slice(-5).forEach(log => {
+                const item = document.createElement('div');
+                item.className = 'history-item';
+                item.innerText = log;
+                container.appendChild(item);
+            });
+        }
+
+        console.log('PIA step-confirmation fix v2 loaded');
+        window.onload = initApp;
+    </script>
+</body>
+</html>
