@@ -354,16 +354,7 @@
 
         /* Floor shadow */
         .avatar-container::after {
-            content: '';
-            position: absolute;
-            left: 50%;
-            bottom: -3px;
-            width: 62%;
-            height: 16px;
-            transform: translateX(-50%);
-            background: var(--ink);
-            opacity: 0.3;
-            border-radius: 50%;
+             content: none;
         }
 
         /* Speech bubbles (mentor stage + popup share the same look) */
@@ -1456,17 +1447,7 @@
 }
 
         .mentor-agent-stage::before {
-            content: '';
-            position: absolute;
-            left: 50%;
-            bottom: 18px;
-            width: 74%;
-            height: 22px;
-            transform: translateX(-50%);
-            border-radius: 50%;
-            background: rgba(8, 7, 14, 0.48);
-            filter: blur(2px);
-            pointer-events: none;
+           content: none;
         }
 
         .video-mentor-sidebar .mentor-overlay-avatar {
