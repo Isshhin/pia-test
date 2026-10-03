@@ -1378,7 +1378,7 @@
             isolation: isolate;
             overflow: hidden;
             padding: 0;
-            background: #0d0c16;
+            background: #FAF8F0;
             border-right: 3px solid var(--ink);
         }
 
@@ -1404,17 +1404,24 @@
         /* The first layer darkens the edges; the second creates the small-dot
            halftone texture seen across the user's PIA hero reference. */
         .mentor-video-overlay {
-            position: absolute;
-            inset: 0;
-            z-index: 1;
-            pointer-events: none;
-            background-image:
-                radial-gradient(circle, rgba(8, 7, 14, 0.76) 1.15px, transparent 1.35px),
-                linear-gradient(180deg, rgba(13, 12, 22, 0.08) 0%, rgba(13, 12, 22, 0.12) 45%, rgba(13, 12, 22, 0.55) 100%),
-                radial-gradient(ellipse at center, transparent 35%, rgba(9, 8, 16, 0.58) 100%);
-            background-size: 5px 5px, 100% 100%, 100% 100%;
-            background-position: 0 0, 0 0, 0 0;
-        }
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+
+    /* OPTIONAL DOTTED BACKGROUND
+       Delete this entire background-image section
+       if you want a completely plain #faf8f0 background. */
+    background-image:
+        radial-gradient(
+            circle,
+            rgba(27, 26, 46, 0.10) 1.1px,
+            transparent 1.3px
+        );
+
+    background-size: 6px 6px;
+    background-position: 0 0;
+}
 
         .video-copy-layer,
         .video-hint-layer {
