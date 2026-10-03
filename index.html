@@ -24,7 +24,7 @@
 
     <style>
         /* =====================================================
-           PIA — "Math Notebook" design
+           PIA ,  "Math Notebook" design
            Graph paper, chalkboard, ruler, stickers.
            The mentor is the loudest thing on screen.
            ===================================================== */
@@ -1370,7 +1370,7 @@
 
 
         /* =====================================================
-           VIDEO MENTOR SIDEBAR — dark classroom + halftone dots
+           VIDEO MENTOR SIDEBAR ,  dark classroom + halftone dots
            Replaces the old colored sunburst/avatar screenshot.
            ===================================================== */
         .video-mentor-sidebar {
@@ -1699,11 +1699,11 @@
             <div id="mastery-destination" class="mastery-destination"></div>
 
             <div class="mastery-btn-grid">
-                <button class="mastery-btn btn-agree" onclick="handleMasteryAction('ACCEPT')">
-                    Accept
-                </button>
                 <button class="mastery-btn btn-refuse" onclick="handleMasteryAction('REFUSE')">
                     Refuse
+                </button>
+                <button class="mastery-btn btn-agree" onclick="handleMasteryAction('ACCEPT')">
+                    Accept
                 </button>
             </div>
         </div>
@@ -2290,7 +2290,45 @@
                             "Look how far you've explored! Your problem-solving path is getting stronger.",
                             "Excellent progress! You kept exploring until the pattern became clear."
                         ]
-                    },
+                    ,
+                        reactions: {
+                            wrongFirst: [
+                                "Interesting route. Let's inspect one clue and try the step from a new angle.",
+                                "That path didn't land yet, but it gave us information. Let's explore one smaller piece."
+                            ],
+                            wrongRepeated: [
+                                "We've tested a couple of paths. Let's narrow the search and focus on the operation this step needs.",
+                                "This puzzle is resisting us a little. Let's explore one detail at a time instead of changing everything."
+                            ],
+                            correctFirstTry: [
+                                "Nice discovery! You found the right path on your first try.",
+                                "Great insight! You uncovered the key idea right away."
+                            ],
+                            correctAfterStruggle: [
+                                "There it is! Exploring those earlier paths helped you uncover the right one.",
+                                "Great comeback, explorer! You kept investigating until the pattern clicked."
+                            ],
+                            fastCorrect: [
+                                "Sharp discovery! You spotted that pattern quickly.",
+                                "That connection clicked fast, great pattern spotting!"
+                            ],
+                            correctStreak: [
+                                "You're connecting the patterns now. Keep following that curiosity.",
+                                "Nice! You're uncovering the structure from one step to the next."
+                            ],
+                            hintRequested: [
+                                "Let's reveal one clue, not the whole answer, so you can keep exploring.",
+                                "Here's one clue to open another path. See what you can discover from it."
+                            ],
+                            finalFormatError: [
+                                "Your idea may be there; now translate it into the exact final form the step is asking for.",
+                                "You're close. Keep the reasoning, but express the result in the required final form."
+                            ],
+                            correctWorkNeedsFinal: [
+                                "That reasoning works. Now turn your exploration into one clear final value.",
+                                "Nice path! You've done the calculation, now state the final result by itself."
+                            ]
+                        }},
                     average: {
                         greet: [
                             "Hey explorer! Let's discover fresh ways to crack this problem step by step!",
@@ -2311,7 +2349,45 @@
                         mastery: [
                             "Amazing achievement! You have mastered this topic. Choose where you would like to continue."
                         ]
-                    },
+                    ,
+                        reactions: {
+                            wrongFirst: [
+                                "Interesting attempt. Try viewing the calculation from another angle.",
+                                "That route was close. Re-examine the relationship between the values."
+                            ],
+                            wrongRepeated: [
+                                "We've explored more than one route. Compare them and identify the point where the logic changes.",
+                                "Let's stop guessing paths and inspect the pattern that should connect these numbers."
+                            ],
+                            correctFirstTry: [
+                                "Aha! You found the right pattern on the first try.",
+                                "Great insight, you connected the clues immediately."
+                            ],
+                            correctAfterStruggle: [
+                                "Nice recovery! Testing different ideas led you to the right pattern.",
+                                "There it is! You used the earlier attempts to discover the better route."
+                            ],
+                            fastCorrect: [
+                                "Excellent pattern recognition, that was quick.",
+                                "You spotted the connection fast. Nice exploratory thinking!"
+                            ],
+                            correctStreak: [
+                                "You're seeing the relationships consistently now. Keep exploring efficiently.",
+                                "Strong pattern streak! You're connecting each new clue faster."
+                            ],
+                            hintRequested: [
+                                "Here's a clue to spark a new line of thinking:",
+                                "Try this clue, then see what connection you can uncover:"
+                            ],
+                            finalFormatError: [
+                                "The reasoning may be right; now express the result in the exact form requested.",
+                                "Keep your idea, but convert it into the required final answer format."
+                            ],
+                            correctWorkNeedsFinal: [
+                                "Good reasoning. Now distill that calculation into the final value.",
+                                "You found the route, now write only the result it leads to."
+                            ]
+                        }},
                     outstanding: {
                         greet: [
                             "New challenge ahead, explorer. See if you can spot the pattern quickly.",
@@ -2337,7 +2413,45 @@
                             "Excellent exploration! You're ready to investigate a more demanding challenge.",
                             "Outstanding reasoning. Keep looking for elegant and efficient solutions."
                         ]
-                    }
+                    ,
+                        reactions: {
+                            wrongFirst: [
+                                "Interesting result. Diagnose where the reasoning changed direction.",
+                                "That was a plausible route. Find the exact assumption or operation that caused the miss."
+                            ],
+                            wrongRepeated: [
+                                "Several routes have missed. Compare them and identify the common point of failure.",
+                                "Treat this like a puzzle: isolate the step that keeps sending the reasoning off course."
+                            ],
+                            correctFirstTry: [
+                                "Excellent insight. You identified the structure immediately.",
+                                "Sharp work, you found an elegant route on the first attempt."
+                            ],
+                            correctAfterStruggle: [
+                                "Excellent recovery. You tested alternatives and found the stronger pattern.",
+                                "That adjustment was smart, you used the failed paths to refine the solution."
+                            ],
+                            fastCorrect: [
+                                "Outstanding pattern recognition, you saw the efficient route almost immediately.",
+                                "Very sharp. You connected the structure with impressive speed."
+                            ],
+                            correctStreak: [
+                                "You're reading the structure consistently now. Keep looking for the most elegant route.",
+                                "Excellent streak. Your pattern recognition is staying both fast and accurate."
+                            ],
+                            hintRequested: [
+                                "One small clue should be enough, use it to infer the rest.",
+                                "Here's a minimal nudge. See if you can reconstruct the full path from it."
+                            ],
+                            finalFormatError: [
+                                "The mathematics is close; tighten the presentation into the exact final form required.",
+                                "Refine the output format without changing the reasoning."
+                            ],
+                            correctWorkNeedsFinal: [
+                                "The reasoning is sound. Compress it into the final value now.",
+                                "Good work. You've shown the path; finish by stating only the result."
+                            ]
+                        }}
                 }
             },
 
@@ -2375,7 +2489,45 @@
                             "Your careful process has improved. You are solving with more consistency now.",
                             "Excellent progress. Your organized approach is producing reliable results."
                         ]
-                    },
+                    ,
+                        reactions: {
+                            wrongFirst: [
+                                "Let's check the sequence carefully. Verify the first operation before changing anything else.",
+                                "One part is off. Recheck each value in order and correct the first mismatch you find."
+                            ],
+                            wrongRepeated: [
+                                "Let's slow the process down. Check one operation at a time and confirm it before moving on.",
+                                "We have repeated errors in this step. Use a clear sequence: identify, calculate, then verify."
+                            ],
+                            correctFirstTry: [
+                                "Correct on the first attempt. Your careful setup worked.",
+                                "Well organized and accurate. Keep using that same step-by-step process."
+                            ],
+                            correctAfterStruggle: [
+                                "Good correction. You found the error and brought the process back into order.",
+                                "Well done. Careful checking paid off and the step is now accurate."
+                            ],
+                            fastCorrect: [
+                                "Accurate and efficient. You completed the step quickly without losing precision.",
+                                "Excellent, fast execution with the details still correct."
+                            ],
+                            correctStreak: [
+                                "Your accuracy is becoming consistent. Keep the same organized routine.",
+                                "Strong sequence of correct work. Your checking process is reliable."
+                            ],
+                            hintRequested: [
+                                "Let's add one structured checkpoint to guide the next move:",
+                                "Use this hint as the next item in your step-by-step process:"
+                            ],
+                            finalFormatError: [
+                                "The final form needs correction. Check the required format, then resubmit only that value.",
+                                "Your submission format is the issue. Match the requested form exactly."
+                            ],
+                            correctWorkNeedsFinal: [
+                                "The calculation is correct. Complete the process by writing the final value only.",
+                                "Good computation. Now record the final result in the required format."
+                            ]
+                        }},
                     average: {
                         greet: [
                             "Precision mode active. Let's work methodically through each problem step.",
@@ -2396,7 +2548,45 @@
                         mastery: [
                             "Mastery threshold reached. All requirements are met. Choose where you would like to continue."
                         ]
-                    },
+                    ,
+                        reactions: {
+                            wrongFirst: [
+                                "Recheck the calculation in order and verify each value.",
+                                "There's a mismatch. Trace the sequence and identify the first incorrect operation."
+                            ],
+                            wrongRepeated: [
+                                "The step needs a more systematic check. Verify each operation before resubmitting.",
+                                "Repeated errors suggest one part of the process is being skipped. Review the sequence carefully."
+                            ],
+                            correctFirstTry: [
+                                "Precise work. You completed that step correctly on the first attempt.",
+                                "Accurate and orderly, that process worked exactly as intended."
+                            ],
+                            correctAfterStruggle: [
+                                "Good correction. You identified the discrepancy and fixed it accurately.",
+                                "Nice recovery. Your verification process caught the error."
+                            ],
+                            fastCorrect: [
+                                "Precise and efficient. That was a clean, fast solution.",
+                                "Excellent control, quick without sacrificing accuracy."
+                            ],
+                            correctStreak: [
+                                "Your work is consistently accurate. Maintain the same structured process.",
+                                "Strong accuracy streak. Your method is producing reliable results."
+                            ],
+                            hintRequested: [
+                                "Systematic hint, use this as the next checkpoint:",
+                                "Add this clue to your sequence, then continue methodically:"
+                            ],
+                            finalFormatError: [
+                                "Your result needs the exact required format. Correct the presentation and resubmit.",
+                                "Check the answer format carefully; the final value must match the requested form."
+                            ],
+                            correctWorkNeedsFinal: [
+                                "The calculation checks out. Now submit the final value only.",
+                                "Correct process. Finish by recording the result in its required form."
+                            ]
+                        }},
                     outstanding: {
                         greet: [
                             "Let's solve this with precision and efficiency. Plan the sequence before calculating.",
@@ -2422,7 +2612,45 @@
                             "Excellent precision. You are ready for a more complex sequence of reasoning.",
                             "Outstanding consistency. Your method is accurate, organized, and efficient."
                         ]
-                    }
+                    ,
+                        reactions: {
+                            wrongFirst: [
+                                "Audit the solution path and locate the exact point where precision was lost.",
+                                "Your structure is close. Identify the specific operation that failed verification."
+                            ],
+                            wrongRepeated: [
+                                "Repeated misses mean the process needs a full audit. Verify assumptions, order, and arithmetic.",
+                                "Rebuild the sequence cleanly rather than patching the last answer."
+                            ],
+                            correctFirstTry: [
+                                "Excellent precision. The full sequence was correct on the first pass.",
+                                "Clean execution, accurate, organized, and complete."
+                            ],
+                            correctAfterStruggle: [
+                                "Strong correction. You isolated the fault and restored an accurate solution path.",
+                                "Excellent verification work. You found the exact issue and corrected it."
+                            ],
+                            fastCorrect: [
+                                "Outstanding efficiency, fast execution with full precision.",
+                                "Very strong: accurate, concise, and completed quickly."
+                            ],
+                            correctStreak: [
+                                "Your precision is highly consistent. Keep optimizing without skipping verification.",
+                                "Excellent run of accurate work. The process is both disciplined and efficient."
+                            ],
+                            hintRequested: [
+                                "Use this as a minimal checkpoint, then complete the remaining sequence independently:",
+                                "One verification cue should be enough. Apply it and finish the process."
+                            ],
+                            finalFormatError: [
+                                "The reasoning is strong; tighten the final presentation to the exact required form.",
+                                "Only the output format needs correction. Make it precise."
+                            ],
+                            correctWorkNeedsFinal: [
+                                "Verified. Now reduce the work to the exact final value requested.",
+                                "The computation is complete; record the result cleanly and precisely."
+                            ]
+                        }}
                 }
             },
 
@@ -2442,7 +2670,7 @@
                             "Game on! Start with one part, then we'll power through the rest together!"
                         ],
                         correct: [
-                            "YES! That's it! One strong step down—keep the momentum going!",
+                            "YES! That's it! One strong step down, keep the momentum going!",
                             "Nice one! You got that step right. Let's carry that energy forward!",
                             "There we go! That correct step is exactly the boost we needed!"
                         ],
@@ -2452,7 +2680,7 @@
                             "No stop signs here! Let's find the tiny slip and keep moving!"
                         ],
                         hint: [
-                            "Quick boost—try this clue:",
+                            "Quick boost, try this clue:",
                             "Here's a power-up for the next step:",
                             "Let's get some momentum with this hint:"
                         ],
@@ -2460,7 +2688,45 @@
                             "Look at that progress! You kept pushing and built real momentum!",
                             "Awesome comeback! Your effort turned into stronger problem solving."
                         ]
-                    },
+                    ,
+                        reactions: {
+                            wrongFirst: [
+                                "Not there yet, but you're still in it! Let's hit this step again with one small change.",
+                                "Almost! Keep the energy up, we'll tackle one piece at a time."
+                            ],
+                            wrongRepeated: [
+                                "This one is putting up a fight, but so are we! Let's focus on one operation and win that part first.",
+                                "Still with me? Good! Let's reset this step, use the clue, and go again."
+                            ],
+                            correctFirstTry: [
+                                "YES! First try, you nailed that step!",
+                                "Boom! Right out of the gate, that's correct!"
+                            ],
+                            correctAfterStruggle: [
+                                "YES! There it is! You fought through that one and got it!",
+                                "That's the comeback! You stayed with it and smashed the step!"
+                            ],
+                            fastCorrect: [
+                                "Whoa, that was fast AND right! Great work!",
+                                "Boom, quick and accurate! That's strong momentum!"
+                            ],
+                            correctStreak: [
+                                "You're on a roll! Keep that correct-answer streak moving!",
+                                "Yes! The momentum is building, keep it going!"
+                            ],
+                            hintRequested: [
+                                "Power hint coming in! Use this and take another swing:",
+                                "Alright, teammate, here's one boost to get you moving again:"
+                            ],
+                            finalFormatError: [
+                                "You've got the idea, now land it in the exact answer format!",
+                                "So close! Keep the math and fix the final form."
+                            ],
+                            correctWorkNeedsFinal: [
+                                "Nice calculation! Now finish strong, write just the final answer.",
+                                "Great work! You've done the hard part; now give me the final value."
+                            ]
+                        }},
                     average: {
                         greet: [
                             "Hey hey! Super pumped to solve these awesome math challenges with you today!",
@@ -2481,33 +2747,109 @@
                         mastery: [
                             "Mastery unlocked. You completed this topic. Choose where you would like to continue."
                         ]
-                    },
+                    ,
+                        reactions: {
+                            wrongFirst: [
+                                "Almost! Shake off that miss and check the calculation once more.",
+                                "Close one! Spot the slip and take another shot."
+                            ],
+                            wrongRepeated: [
+                                "Okay, this step is challenging us! Let's lock onto the key operation and try again.",
+                                "We're not giving this one away, check the setup, then come back strong."
+                            ],
+                            correctFirstTry: [
+                                "YES! First attempt and it's right!",
+                                "Boom! You nailed that step immediately!"
+                            ],
+                            correctAfterStruggle: [
+                                "There it is! Great comeback, you fixed it and got the win!",
+                                "YESSS! You turned those misses into a correct answer!"
+                            ],
+                            fastCorrect: [
+                                "Lightning quick AND correct! That's awesome!",
+                                "Boom! Fast, accurate, and ready for the next one!"
+                            ],
+                            correctStreak: [
+                                "You're on fire! Keep that streak alive!",
+                                "That's another one! Great momentum, keep rolling!"
+                            ],
+                            hintRequested: [
+                                "Pro-tip incoming! Use this boost and go for it:",
+                                "Here's your power hint, take it and make the next move:"
+                            ],
+                            finalFormatError: [
+                                "Math looks close, now stick the landing with the right final format!",
+                                "Almost scored it! Fix the answer format and send it again."
+                            ],
+                            correctWorkNeedsFinal: [
+                                "Great calculation! Now finish the play with the final value.",
+                                "You worked it out, now give me the answer by itself!"
+                            ]
+                        }},
                     outstanding: {
                         greet: [
                             "Big challenge incoming! Let's see how fast you can spot the winning strategy!",
-                            "You're on a roll—time to push for a sharp, efficient solution!",
+                            "You're on a roll, time to push for a sharp, efficient solution!",
                             "Bring the energy! Try solving this with fewer clues and maximum focus!"
                         ],
                         correct: [
-                            "BOOM—fast and accurate! That's some serious math momentum!",
+                            "BOOM, fast and accurate! That's some serious math momentum!",
                             "YES! Clean reasoning and a strong finish. Keep that streak alive!",
                             "That's championship-level focus! You solved it with confidence and control!"
                         ],
                         wrong: [
                             "Good challenge! Find the slip, fix it, and jump right back in!",
                             "So close! Diagnose that one mistake and keep the streak moving!",
-                            "You've got the skills—spot the mismatch and hit it again!"
+                            "You've got the skills, spot the mismatch and hit it again!"
                         ],
                         hint: [
-                            "Tiny power hint—see what you can do with just this:",
+                            "Tiny power hint, see what you can do with just this:",
                             "One clue, then you're taking it from here:",
-                            "Quick nudge—finish the rest with your own strategy:"
+                            "Quick nudge, finish the rest with your own strategy:"
                         ],
                         mastery: [
                             "Outstanding performance! You're ready to take on a bigger challenge!",
                             "You crushed that level with speed and accuracy. Keep the momentum going!"
                         ]
-                    }
+                    ,
+                        reactions: {
+                            wrongFirst: [
+                                "Good swing! Find the tiny slip and bounce right back.",
+                                "That was close, diagnose it fast and attack the step again."
+                            ],
+                            wrongRepeated: [
+                                "This one's a real challenge! Reset the approach and come back with a cleaner play.",
+                                "A couple misses now, time to change the game plan and target the exact weak spot."
+                            ],
+                            correctFirstTry: [
+                                "BOOM! Clean first-try finish!",
+                                "Yes! You stepped up and nailed it immediately!"
+                            ],
+                            correctAfterStruggle: [
+                                "Huge recovery! You adjusted and came back with the correct answer.",
+                                "That's a clutch comeback, you found the fix and delivered!"
+                            ],
+                            fastCorrect: [
+                                "That was blazing fast and dead-on accurate!",
+                                "WOW, quick read, quick solve, correct answer!"
+                            ],
+                            correctStreak: [
+                                "You're absolutely rolling! Keep the speed and accuracy together!",
+                                "Big streak! Stay sharp and keep the momentum high!"
+                            ],
+                            hintRequested: [
+                                "Tiny boost only, you can take it from here!",
+                                "Quick cue coming in. Use it, then finish the challenge yourself!"
+                            ],
+                            finalFormatError: [
+                                "You've got the play, just clean up the final answer format.",
+                                "Almost perfect! Tighten the format and finish it."
+                            ],
+                            correctWorkNeedsFinal: [
+                                "Calculation crushed. Now close it out with the final value.",
+                                "Great work, finish strong and state the result only."
+                            ]
+                        }}
                 }
             },
 
@@ -2528,7 +2870,7 @@
                         ],
                         correct: [
                             "Wonderful! That step is correct, and your effort is really paying off.",
-                            "You did it! Keep trusting the process—we'll take the next step together.",
+                            "You did it! Keep trusting the process, we'll take the next step together.",
                             "That's right! I'm glad you kept trying. Let's continue from here."
                         ],
                         wrong: [
@@ -2545,11 +2887,49 @@
                             "You kept going and made wonderful progress. Be proud of how much stronger you've become.",
                             "Your steady effort really showed. You've built more confidence and skill."
                         ]
-                    },
+                    ,
+                        reactions: {
+                            wrongFirst: [
+                                "That's okay, we'll work through this part together. Check one piece and try again.",
+                                "You're still making progress. Let's gently revisit the step and see what needs changing."
+                            ],
+                            wrongRepeated: [
+                                "This step is being difficult, but we can stay with it together. Let's use one clue and try a smaller piece.",
+                                "A few tries are okay. Let's make the next attempt simpler and focus on just one operation."
+                            ],
+                            correctFirstTry: [
+                                "Wonderful, you got that on your first try! Nice work.",
+                                "You did it right away! I'm glad to see your effort paying off."
+                            ],
+                            correctAfterStruggle: [
+                                "You got it! I'm really glad you stayed with that one.",
+                                "Wonderful comeback. Your patience and effort paid off."
+                            ],
+                            fastCorrect: [
+                                "Great job! You found the answer quickly and carefully.",
+                                "That came together so smoothly, well done!"
+                            ],
+                            correctStreak: [
+                                "You're doing really well. One correct step is building nicely on the next.",
+                                "What a lovely streak, your effort is becoming very consistent."
+                            ],
+                            hintRequested: [
+                                "Of course. Here's one helpful clue, and we'll keep working from there:",
+                                "I'm with you. Try this hint and see what feels clearer:"
+                            ],
+                            finalFormatError: [
+                                "You're very close. The idea is there; we just need to adjust the final answer format.",
+                                "Nice effort. Let's keep the reasoning and gently fix how the final value is written."
+                            ],
+                            correctWorkNeedsFinal: [
+                                "Your calculation is right. Now let's finish it by writing only the final value.",
+                                "Lovely work so far, just one last thing: state the final answer clearly."
+                            ]
+                        }},
                     average: {
                         greet: [
                             "Hello my friend! I'm right here beside you, so take all the time you need.",
-                            "Don't worry about making mistakes—we'll support each other every step of the way!"
+                            "Don't worry about making mistakes, we'll support each other every step of the way!"
                         ],
                         correct: [
                             "Wonderful job! I'm so proud of how hard you're working!",
@@ -2566,7 +2946,45 @@
                         mastery: [
                             "You achieved mastery. Choose where you would like to continue."
                         ]
-                    },
+                    ,
+                        reactions: {
+                            wrongFirst: [
+                                "Almost there. Let's check the calculation together and try once more.",
+                                "That's a good attempt. Look over the step again and see what you would change."
+                            ],
+                            wrongRepeated: [
+                                "This one needs a little more support. Let's focus on the key operation and work through it together.",
+                                "It's okay to need another try. Let's make the next attempt more focused."
+                            ],
+                            correctFirstTry: [
+                                "Wonderful job, you got it right on the first try!",
+                                "You did that beautifully. Great first attempt!"
+                            ],
+                            correctAfterStruggle: [
+                                "You got it! I'm glad you kept working through the tricky part.",
+                                "Great recovery. Your persistence really paid off."
+                            ],
+                            fastCorrect: [
+                                "Wonderful, quick and correct! You handled that smoothly.",
+                                "Nice work! You found the answer quickly without losing accuracy."
+                            ],
+                            correctStreak: [
+                                "You're building a really strong rhythm. Keep going!",
+                                "Another correct one, your steady effort is showing."
+                            ],
+                            hintRequested: [
+                                "Absolutely. Here's a helpful clue to support your next try:",
+                                "I'm happy to help. Use this hint and see what you notice:"
+                            ],
+                            finalFormatError: [
+                                "You're close, the reasoning looks promising. Let's just fix the final format.",
+                                "Good work. We only need to adjust how the answer is written."
+                            ],
+                            correctWorkNeedsFinal: [
+                                "That's correct work. Now let's complete it with the final value only.",
+                                "Nicely done, finish the step by writing the result clearly."
+                            ]
+                        }},
                     outstanding: {
                         greet: [
                             "You've been doing really well. I'll give you more room to lead this solution.",
@@ -2584,7 +3002,7 @@
                             "Close! Trust what you know and see if you can identify the mismatch yourself."
                         ],
                         hint: [
-                            "Just a small nudge—you can take it from here:",
+                            "Just a small nudge, you can take it from here:",
                             "I'll give you one clue, then let you lead the rest:",
                             "Use this light hint and trust your own reasoning:"
                         ],
@@ -2592,7 +3010,45 @@
                             "Wonderful achievement. Your independence and confidence have grown so much.",
                             "Excellent work. You're ready to take on a challenge with even more independence."
                         ]
-                    }
+                    ,
+                        reactions: {
+                            wrongFirst: [
+                                "That's a small slip. I think you can spot it, check the step once more.",
+                                "Your approach is strong. Look closely and see where one detail needs adjusting."
+                            ],
+                            wrongRepeated: [
+                                "This is a tougher one. Let's stay patient and identify the exact part that keeps causing trouble.",
+                                "A couple of misses don't erase your good reasoning. Refocus on the key operation and try again."
+                            ],
+                            correctFirstTry: [
+                                "Beautiful work, correct on the first try.",
+                                "Excellent. You handled that confidently and accurately."
+                            ],
+                            correctAfterStruggle: [
+                                "Excellent recovery. You stayed with the challenge and found the correction.",
+                                "I'm glad you kept going, that was a thoughtful comeback."
+                            ],
+                            fastCorrect: [
+                                "Excellent, quick, confident, and correct.",
+                                "That was very smooth. You understood the step almost immediately."
+                            ],
+                            correctStreak: [
+                                "You're showing wonderful consistency. Keep that calm momentum going.",
+                                "Another strong answer. Your accuracy is staying beautifully steady."
+                            ],
+                            hintRequested: [
+                                "Here's a small nudge. I think you'll be able to carry the rest from here:",
+                                "Of course, just one clue, then see how far your reasoning takes you:"
+                            ],
+                            finalFormatError: [
+                                "Your reasoning is strong; only the final presentation needs a small adjustment.",
+                                "You're essentially there. Refine the answer format and you're done."
+                            ],
+                            correctWorkNeedsFinal: [
+                                "The work is solid. Now finish neatly with the final value.",
+                                "Excellent reasoning, just state the final answer clearly now."
+                            ]
+                        }}
                 }
             },
 
@@ -2609,7 +3065,7 @@
                         greet: [
                             "Let's go carefully. We only need to handle one step at a time.",
                             "No need to rush. We'll check each part before moving forward.",
-                            "We'll keep this manageable—one calculation, one check, then the next step."
+                            "We'll keep this manageable, one calculation, one check, then the next step."
                         ],
                         correct: [
                             "Good, that step checks out. Let's continue carefully from here.",
@@ -2619,7 +3075,7 @@
                         wrong: [
                             "Something is off, but we can fix it. Let's check the numbers one at a time.",
                             "Careful here. Revisit the last operation and make sure each value is in the right place.",
-                            "We caught an error. That's useful—let's correct it before we continue."
+                            "We caught an error. That's useful, let's correct it before we continue."
                         ],
                         hint: [
                             "Let's use one careful clue:",
@@ -2630,7 +3086,45 @@
                             "You handled the challenge carefully and made strong progress.",
                             "Your careful checking paid off. You're becoming more confident with each problem."
                         ]
-                    },
+                    ,
+                        reactions: {
+                            wrongFirst: [
+                                "That one slipped, but we can check it carefully. Start with the first operation and see what changed.",
+                                "Not quite. Let's be cautious and verify one part before trying again."
+                            ],
+                            wrongRepeated: [
+                                "This step keeps catching us, so let's reduce the risk: check one operation at a time.",
+                                "A few errors have appeared here. Let's slow the checking down and make the next attempt carefully."
+                            ],
+                            correctFirstTry: [
+                                "Good, that one is correct on the first try. Nice careful work.",
+                                "That worked! Your careful approach paid off immediately."
+                            ],
+                            correctAfterStruggle: [
+                                "Good, you found it! Careful checking helped you recover from those earlier slips.",
+                                "That's a relief, you corrected the tricky part and got the step right."
+                            ],
+                            fastCorrect: [
+                                "Nice, quick and correct. You stayed accurate even at that pace.",
+                                "That was fast, and the answer still checks out. Great work."
+                            ],
+                            correctStreak: [
+                                "You're getting a steady run of correct answers now. Keep checking carefully.",
+                                "Good consistency. Your careful approach is working step after step."
+                            ],
+                            hintRequested: [
+                                "Let's use one safe clue so we know what to check next:",
+                                "Here's a clue to reduce the uncertainty in this step:"
+                            ],
+                            finalFormatError: [
+                                "The calculation may be fine; let's carefully fix the final format before moving on.",
+                                "We're very close. Check exactly how the final answer needs to be written."
+                            ],
+                            correctWorkNeedsFinal: [
+                                "The calculation checks out. Now carefully write the final value only.",
+                                "Good, your work is correct. Finish by stating the result in the required form."
+                            ]
+                        }},
                     average: {
                         greet: [
                             "Yikes, math problem ahead! Let's go really slow so we don't trip up.",
@@ -2651,7 +3145,45 @@
                         mastery: [
                             "You reached mastery. Choose where you would like to continue."
                         ]
-                    },
+                    ,
+                        reactions: {
+                            wrongFirst: [
+                                "A small error slipped in. Let's check where it happened before trying again.",
+                                "Not quite. Review the operation carefully and correct the part that changed the result."
+                            ],
+                            wrongRepeated: [
+                                "We're seeing the same step cause trouble. Let's verify it methodically instead of rushing another attempt.",
+                                "A couple of misses means we should check the setup carefully before submitting again."
+                            ],
+                            correctFirstTry: [
+                                "Good! That answer checks out on the first try.",
+                                "Correct right away, nice careful work."
+                            ],
+                            correctAfterStruggle: [
+                                "Good recovery. You found the error and corrected it carefully.",
+                                "There we go, you checked the tricky part and got it right."
+                            ],
+                            fastCorrect: [
+                                "Quick and correct, that's a good sign.",
+                                "Nice! You moved fast without letting an error slip through."
+                            ],
+                            correctStreak: [
+                                "You're putting together a steady correct streak. Keep the careful checks.",
+                                "Good consistency, each step is checking out."
+                            ],
+                            hintRequested: [
+                                "Here's a clue so you know exactly what to inspect next:",
+                                "Use this hint as a careful checkpoint:"
+                            ],
+                            finalFormatError: [
+                                "The issue is in the final format. Check that detail carefully and resubmit.",
+                                "Almost there, make sure the result is written exactly as requested."
+                            ],
+                            correctWorkNeedsFinal: [
+                                "The calculation is correct. Now carefully enter the final value by itself.",
+                                "Good work. One last check: submit only the final result."
+                            ]
+                        }},
                     outstanding: {
                         greet: [
                             "You've been accurate, so let's raise the challenge while still checking the critical details.",
@@ -2659,13 +3191,13 @@
                             "Let's test your accuracy under a stronger challenge. Plan first, then verify the key step."
                         ],
                         correct: [
-                            "Excellent—fast, accurate, and still carefully checked.",
+                            "Excellent, fast, accurate, and still carefully checked.",
                             "That worked perfectly. Your confidence and attention to detail are balancing well.",
                             "Strong result. You handled the challenge without losing precision."
                         ],
                         wrong: [
                             "One detail slipped through. See if you can locate it before changing your whole approach.",
-                            "Careful—your strategy is probably sound. Recheck the exact operation that produced this value.",
+                            "Careful, your strategy is probably sound. Recheck the exact operation that produced this value.",
                             "That result needs another look. Identify the small inconsistency and correct only what is necessary."
                         ],
                         hint: [
@@ -2677,7 +3209,45 @@
                             "Excellent control. You stayed accurate even as the challenge increased.",
                             "Outstanding work. Your careful reasoning is ready for a more demanding problem."
                         ]
-                    }
+                    ,
+                        reactions: {
+                            wrongFirst: [
+                                "That looks like a small slip. Check the exact operation before changing the whole approach.",
+                                "One detail is off. Verify it carefully, you likely won't need to redo everything."
+                            ],
+                            wrongRepeated: [
+                                "More than one miss suggests a hidden issue. Audit the setup carefully before the next attempt.",
+                                "Let's not let repeated slips compound. Recheck the core operation from the start."
+                            ],
+                            correctFirstTry: [
+                                "Excellent, that checks out immediately.",
+                                "Correct on the first pass. Your careful reasoning is strong."
+                            ],
+                            correctAfterStruggle: [
+                                "Strong recovery. You isolated the error and corrected it without losing the structure.",
+                                "Excellent check, you found the exact issue and fixed it."
+                            ],
+                            fastCorrect: [
+                                "Very good, fast, accurate, and still carefully controlled.",
+                                "That was quick, and the result checks out perfectly."
+                            ],
+                            correctStreak: [
+                                "Your accuracy is staying very stable. Keep the same careful control.",
+                                "Excellent consistency, you're avoiding the little slips that usually cause trouble."
+                            ],
+                            hintRequested: [
+                                "Here's one precise clue. Use it to verify the uncertain part, then finish independently:",
+                                "A small checkpoint should be enough, inspect this clue carefully:"
+                            ],
+                            finalFormatError: [
+                                "The reasoning is strong; only the exact final format needs correction.",
+                                "You're essentially correct. Tighten the presentation and submit the required form."
+                            ],
+                            correctWorkNeedsFinal: [
+                                "The work checks out. Now give the exact final value, cleanly and carefully.",
+                                "Good reasoning. Finish with the precise result only."
+                            ]
+                        }}
                 }
             },
 
@@ -2710,7 +3280,45 @@
                         mastery: [
                             "You have made solid progress and completed the required work."
                         ]
-                    },
+                    ,
+                        reactions: {
+                            wrongFirst: [
+                                "That answer is not correct yet. Check one part of the step and try again.",
+                                "Try again. Focus on the operation required by this step."
+                            ],
+                            wrongRepeated: [
+                                "This step is taking several attempts. Break it into a smaller check before resubmitting.",
+                                "Review the setup carefully. Repeated errors suggest one operation needs correction."
+                            ],
+                            correctFirstTry: [
+                                "Correct on the first attempt. Continue to the next step.",
+                                "That is correct. Good first try."
+                            ],
+                            correctAfterStruggle: [
+                                "Correct. You fixed the earlier errors and completed the step.",
+                                "Good recovery. The step is now correct."
+                            ],
+                            fastCorrect: [
+                                "Correct and quick. Continue.",
+                                "Fast and accurate. Good work."
+                            ],
+                            correctStreak: [
+                                "You have several correct answers in a row. Keep going.",
+                                "Your recent answers are consistently correct."
+                            ],
+                            hintRequested: [
+                                "Here is a hint to guide the next attempt:",
+                                "Use this clue and try the step again:"
+                            ],
+                            finalFormatError: [
+                                "The answer format is incorrect. Enter the final value in the required form.",
+                                "Correct the final answer format and resubmit."
+                            ],
+                            correctWorkNeedsFinal: [
+                                "The calculation is correct. Now enter only the final value.",
+                                "Correct working. Submit the final result by itself."
+                            ]
+                        }},
                     average: {
                         greet: [
                             "Let's begin solving the mathematical problem."
@@ -2727,7 +3335,45 @@
                         mastery: [
                             "Mastery criteria fulfilled. Choose where you would like to continue."
                         ]
-                    },
+                    ,
+                        reactions: {
+                            wrongFirst: [
+                                "Incorrect. Review the calculation and try again.",
+                                "Check the step for an arithmetic or setup error."
+                            ],
+                            wrongRepeated: [
+                                "There have been multiple errors on this step. Review the method before another attempt.",
+                                "Recheck the setup and operation carefully before resubmitting."
+                            ],
+                            correctFirstTry: [
+                                "Correct on the first attempt.",
+                                "Correct. Proceed."
+                            ],
+                            correctAfterStruggle: [
+                                "Correct. You successfully corrected the previous errors.",
+                                "Good recovery. The step is now complete."
+                            ],
+                            fastCorrect: [
+                                "Correct and efficient.",
+                                "Quick and accurate."
+                            ],
+                            correctStreak: [
+                                "Your recent answers are consistently correct.",
+                                "Good accuracy streak. Continue."
+                            ],
+                            hintRequested: [
+                                "Here is a hint:",
+                                "Use this clue for the next attempt:"
+                            ],
+                            finalFormatError: [
+                                "Use the required final answer format and try again.",
+                                "The value must be submitted in the requested format."
+                            ],
+                            correctWorkNeedsFinal: [
+                                "Correct calculation. Now enter the final answer only.",
+                                "The working is correct. Submit the resulting value."
+                            ]
+                        }},
                     outstanding: {
                         greet: [
                             "Solve the problem using the most efficient valid approach you can identify.",
@@ -2748,16 +3394,137 @@
                         mastery: [
                             "Mastery criteria fulfilled. You are ready for a more demanding task."
                         ]
-                    }
+                    ,
+                        reactions: {
+                            wrongFirst: [
+                                "Incorrect. Identify the specific error and try again.",
+                                "Recheck the exact point where the calculation diverged."
+                            ],
+                            wrongRepeated: [
+                                "Multiple attempts have missed. Reassess the method before resubmitting.",
+                                "Review the full setup and isolate the repeated error."
+                            ],
+                            correctFirstTry: [
+                                "Correct on the first attempt. Strong work.",
+                                "Accurate first-pass solution."
+                            ],
+                            correctAfterStruggle: [
+                                "Correct. You identified and fixed the earlier issue.",
+                                "Strong recovery. The corrected reasoning is accurate."
+                            ],
+                            fastCorrect: [
+                                "Fast and accurate. Excellent efficiency.",
+                                "Correct with very little response time."
+                            ],
+                            correctStreak: [
+                                "Strong accuracy streak. Maintain the same standard.",
+                                "Your recent performance is consistently accurate."
+                            ],
+                            hintRequested: [
+                                "Here is a minimal hint. Complete the remaining reasoning independently:",
+                                "Use this clue as a small nudge, then finish the step:"
+                            ],
+                            finalFormatError: [
+                                "The reasoning may be correct; fix the final presentation.",
+                                "Use the exact required output format."
+                            ],
+                            correctWorkNeedsFinal: [
+                                "The reasoning is complete. State the final value only.",
+                                "Correct work. Finish with the exact result."
+                            ]
+                        }}
                 }
             }
         };
+
+
+        // --- PERSONALITY-SPECIFIC TOPIC PROGRESSION DIALOGUE ---
+        // These messages are intentionally separate from the mastery statistics.
+        // Add or edit quoted lines inside each persona to customize the popup.
+        // {topic} is automatically replaced with the destination topic name.
+        const ADAPTIVE_PERSONA_MESSAGES = {
+            openness: {
+                upgrade: [
+                    "This topic looks a little too easy for you, explorer. Want to discover a tougher challenge in {topic}?",
+                    "You seem ready for something new. Would you like to explore the next challenge in {topic}?"
+                ],
+                downgrade: [
+                    "This topic seems a bit tougher right now. Want to explore {topic} again and rebuild the pattern from there?",
+                    "Let's approach this from another angle. Would you like to revisit {topic} and strengthen the ideas there first?"
+                ]
+            },
+            conscientiousness: {
+                upgrade: [
+                    "Your work here looks consistently strong. Would you like to move up to {topic} and take on a more demanding set of steps?",
+                    "You are handling this topic accurately and efficiently. Would you like to continue to {topic}?"
+                ],
+                downgrade: [
+                    "This topic may need a little more review. Would you like to return to {topic} and strengthen the foundation step by step?",
+                    "A more structured review may help here. Would you like to go back to {topic} and rebuild the process carefully?"
+                ]
+            },
+            extraversion: {
+                upgrade: [
+                    "You're crushing this topic! Want to level up and take on {topic}?",
+                    "Great momentum! Ready to move up and tackle {topic} next?"
+                ],
+                downgrade: [
+                    "This topic is giving us a tougher fight. Want to drop back to {topic}, build momentum, and come back stronger?",
+                    "Let's reset and get another win. Want to review {topic} first, then charge back into this challenge?"
+                ]
+            },
+            agreeableness: {
+                upgrade: [
+                    "You seem very comfortable with this topic. Would you like to move up to {topic} and try a bigger challenge?",
+                    "You're doing really well here. Would you like to continue to {topic} and take the next step together?"
+                ],
+                downgrade: [
+                    "This topic seems a little difficult right now. Would you like to return to {topic} for some extra practice together?",
+                    "We can make this easier to manage. Would you like to review {topic} together before trying this topic again?"
+                ]
+            },
+            neuroticism: {
+                upgrade: [
+                    "You're handling this topic really well. Would you like to move up to {topic} and try the next challenge carefully?",
+                    "Your answers are looking steady. Would you like to continue to {topic} and take on the next level?"
+                ],
+                downgrade: [
+                    "This topic seems a bit demanding right now. Would you like to return to {topic} and review the earlier skills carefully?",
+                    "Let's reduce the difficulty for a moment and make sure the foundation is secure. Would you like to revisit {topic}?"
+                ]
+            },
+            neutral: {
+                upgrade: [
+                    "This topic appears to be easy for you. Would you like to move up to {topic}?",
+                    "You seem ready for the next topic. Would you like to continue to {topic}?"
+                ],
+                downgrade: [
+                    "This topic appears to need more review. Would you like to return to {topic} for additional practice?",
+                    "A review of the previous topic may help. Would you like to go back to {topic}?"
+                ]
+            }
+        };
+
+        function sanitizeTutorText(value) {
+            // Prevent em dashes and en dashes from appearing in tutor dialogue.
+            // Use Unicode code points so normal spaces and regular hyphens are untouched.
+            return String(value ?? "").replace(/\s*[\u2014\u2013]\s*/g, ", ");
+        }
+
+        function getAdaptivePersonaMessage(type, targetTopic) {
+            const trait = state.oceanTrait || 'neutral';
+            const personaMessages = ADAPTIVE_PERSONA_MESSAGES[trait] || ADAPTIVE_PERSONA_MESSAGES.neutral;
+            const key = type === 'UPGRADE' ? 'upgrade' : 'downgrade';
+            const choices = personaMessages[key] || ADAPTIVE_PERSONA_MESSAGES.neutral[key] || [];
+            const template = getNonRepeatingLine(`adaptive:${trait}:${key}`, choices);
+            return sanitizeTutorText(template.replace(/\{topic\}/g, getTopicName(targetTopic)));
+        }
 
         // --- STATE MANAGEMENT ---
         let state = {
             theme: 'green',
             oceanTrait: null,
-            learningProfile: 'average', // Profile 2 default until live ML profiling is connected
+            learningProfile: 'average', // Profile 2 default; Cloudflare ML may change this mid-step
             currentTopic: 'topic1',
             currentQuestionIndex: 0,
             currentStepIndex: 0,
@@ -2780,6 +3547,64 @@
         function getRandomLine(arr) {
             if (!arr || arr.length === 0) return "";
             return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        // --- NO-REPEAT DIALOGUE ROTATION ---
+        // Statements remain hard coded in this HTML file.
+        // Each dialogue bucket works like a shuffle bag:
+        // every available line is used once before any line repeats.
+        const dialogueRotation = {};
+
+        function shuffledCopy(items) {
+            const copy = [...items];
+            for (let i = copy.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [copy[i], copy[j]] = [copy[j], copy[i]];
+            }
+            return copy;
+        }
+
+        function getNonRepeatingLine(bucketKey, arr) {
+            const messages = Array.from(new Set(
+                (Array.isArray(arr) ? arr : [])
+                    .map(item => String(item || '').trim())
+                    .filter(Boolean)
+            ));
+
+            if (messages.length === 0) return "";
+            if (messages.length === 1) return messages[0];
+
+            const signature = messages.join("\u241E");
+            let bucket = dialogueRotation[bucketKey];
+
+            if (!bucket || bucket.signature !== signature || bucket.remaining.length === 0) {
+                const previousLine = bucket?.lastLine || "";
+                const remaining = shuffledCopy(messages);
+
+                // Prevent the first line of a new cycle from matching the
+                // final line from the previous cycle.
+                if (previousLine && remaining[0] === previousLine && remaining.length > 1) {
+                    const swapIndex = remaining.findIndex((line, index) => index > 0 && line !== previousLine);
+                    if (swapIndex > 0) {
+                        [remaining[0], remaining[swapIndex]] = [remaining[swapIndex], remaining[0]];
+                    }
+                }
+
+                bucket = {
+                    signature,
+                    remaining,
+                    lastLine: previousLine
+                };
+                dialogueRotation[bucketKey] = bucket;
+            }
+
+            const selected = bucket.remaining.shift();
+            bucket.lastLine = selected;
+            return selected;
+        }
+
+        function resetDialogueRotation() {
+            Object.keys(dialogueRotation).forEach(key => delete dialogueRotation[key]);
         }
 
 
@@ -2808,7 +3633,69 @@
                 messages = Array.isArray(fallback) ? fallback : (fallback ? [fallback] : []);
             }
 
-            return getRandomLine(messages);
+            const trait = state.oceanTrait || 'neutral';
+            const profile = state.learningProfile || 'average';
+            return getNonRepeatingLine(`persona:${trait}:${profile}:${type}`, messages);
+        }
+
+
+        // --- HUMAN-LIKE REACTION LAYER ---
+        // The ML profile controls the support level. The reaction type describes
+        // what just happened on this attempt. OCEAN + profile + reaction determines
+        // the tutor's exact statement.
+        function getPersonaReaction(reactionType, fallbackType = '') {
+            const profileConfig = getCurrentPersonaProfile();
+            let messages = profileConfig?.reactions?.[reactionType];
+
+            if (typeof messages === 'string') messages = [messages];
+
+            if (!Array.isArray(messages) || messages.length === 0) {
+                if (fallbackType) return getPersonaMessage(fallbackType);
+                return '';
+            }
+
+            const trait = state.oceanTrait || 'neutral';
+            const profile = state.learningProfile || 'average';
+            return getNonRepeatingLine(`reaction:${trait}:${profile}:${reactionType}`, messages);
+        }
+
+        function getConsecutiveCorrectCount() {
+            const recent = getRecentMLAnswerEvents();
+            let count = 0;
+            for (let i = recent.length - 1; i >= 0; i--) {
+                if (!recent[i].correct) break;
+                count++;
+            }
+            return count;
+        }
+
+        function chooseCorrectReaction(event) {
+            if (mlTracker.currentStepWrongCount > 0) {
+                return 'correctAfterStruggle';
+            }
+
+            if (event?.responseTime <= ML_PROFILE_CONFIG.fastCorrectSeconds) {
+                return 'fastCorrect';
+            }
+
+            if (getConsecutiveCorrectCount() >= ML_PROFILE_CONFIG.correctStreakThreshold) {
+                return 'correctStreak';
+            }
+
+            return 'correctFirstTry';
+        }
+
+        function chooseWrongReaction() {
+            return mlTracker.currentStepWrongCount >= 2
+                ? 'wrongRepeated'
+                : 'wrongFirst';
+        }
+
+        function speakPersonaReaction(reactionType, avatarState, speechColor, fallbackType = '') {
+            mlTracker.lastReaction = reactionType;
+            const message = getPersonaReaction(reactionType, fallbackType);
+            if (message) speak(message, avatarState, speechColor);
+            updateMLDebugBadge(`Reaction: ${reactionType}`);
         }
 
         // =========================================================
@@ -2820,11 +3707,27 @@
         const ML_PROFILE_CONFIG = {
             endpoint: 'https://pia-ml-api.marcstephen444.workers.dev/predict',
             rollingAnswerWindow: 8,
-            minAnswerEvents: 3,
-            confirmationsRequired: 2,
-            immediateSwitchConfidence: 0.85,
+
+            // Mid-step adaptation: start classifying after two real submissions.
+            minAnswerEvents: 2,
+            confirmationsRequired: 1,
+            immediateSwitchConfidence: 0.95,
+
+            // Keep profile movement human-like. A prediction can move the active
+            // profile by only one level at a time:
+            // P1 <-> P2 <-> P3. It cannot jump directly from P1 to P3 or P3 to P1.
+            maxProfileStepPerPrediction: 1,
+
+            // Human-reaction settings.
+            fastCorrectSeconds: 12,
+            correctStreakThreshold: 3,
+
             requestTimeoutMs: 5000,
-            learnFromLiveData: true
+
+            // Keep false while manually testing so fake test answers do not move
+            // the model centroids. Turn on only when you intentionally collect
+            // real learning data for online updates.
+            learnFromLiveData: false
         };
 
         const mlTracker = {
@@ -2833,13 +3736,16 @@
             currentStepKey: null,
             currentStepAttempts: 0,
             currentStepHintCount: 0,
+            currentStepWrongCount: 0,
             stepSequence: 0,
             attemptStartedAt: null,
             candidateProfile: null,
             candidateCount: 0,
             lastPrediction: null,
+            lastAppliedTarget: null,
             lastConfidence: null,
             lastFeatures: null,
+            lastReaction: null,
             requestSequence: 0,
             latestHandledRequest: 0
         };
@@ -2864,13 +3770,22 @@
             badge.dataset.profile = profile;
             badge.textContent = `ML TEST · ${PROFILE_LABELS[profile] || profile}`;
 
+            const predictionText = mlTracker.lastPrediction
+                ? ` | ML ${mlTracker.lastPrediction}`
+                : '';
+            const targetText = mlTracker.lastAppliedTarget && mlTracker.lastAppliedTarget !== mlTracker.lastPrediction
+                ? ` | step target ${mlTracker.lastAppliedTarget}`
+                : '';
             const confidenceText = Number.isFinite(mlTracker.lastConfidence)
                 ? ` | confidence ${Math.round(mlTracker.lastConfidence * 100)}%`
                 : '';
             const candidateText = mlTracker.candidateProfile
                 ? ` | candidate ${mlTracker.candidateProfile} (${mlTracker.candidateCount}/${ML_PROFILE_CONFIG.confirmationsRequired})`
                 : '';
-            badge.title = `${extraStatus || 'Current active learning profile'}${confidenceText}${candidateText}`;
+            const reactionText = mlTracker.lastReaction
+                ? ` | reaction ${mlTracker.lastReaction}`
+                : '';
+            badge.title = `${extraStatus || 'Current active learning profile'}${predictionText}${targetText}${confidenceText}${candidateText}${reactionText}`;
         }
 
         function resetMLTracker() {
@@ -2879,13 +3794,16 @@
             mlTracker.currentStepKey = null;
             mlTracker.currentStepAttempts = 0;
             mlTracker.currentStepHintCount = 0;
+            mlTracker.currentStepWrongCount = 0;
             mlTracker.stepSequence = 0;
             mlTracker.attemptStartedAt = null;
             mlTracker.candidateProfile = null;
             mlTracker.candidateCount = 0;
             mlTracker.lastPrediction = null;
+            mlTracker.lastAppliedTarget = null;
             mlTracker.lastConfidence = null;
             mlTracker.lastFeatures = null;
+            mlTracker.lastReaction = null;
             mlTracker.requestSequence = 0;
             mlTracker.latestHandledRequest = 0;
             updateMLDebugBadge('ML tracker reset');
@@ -2900,6 +3818,7 @@
             mlTracker.currentStepKey = `${state.currentTopic}:${problem.id}:${state.currentStepIndex}:${mlTracker.stepSequence}`;
             mlTracker.currentStepAttempts = 0;
             mlTracker.currentStepHintCount = 0;
+            mlTracker.currentStepWrongCount = 0;
             mlTracker.stepHintCounts[mlTracker.currentStepKey] = 0;
             mlTracker.attemptStartedAt = Date.now();
         }
@@ -2924,15 +3843,33 @@
                     recent_accuracy: 0.5,
                     average_attempts: 1,
                     hint_rate: 0,
-                    average_response_time: 0,
+                    average_response_time: 120,
+                    correct_response_efficiency: 0,
                     consecutive_correct: 0,
                     consecutive_wrong: 0
                 };
             }
 
-            const correctCount = recent.filter(event => event.correct).length;
+            const correctEvents = recent.filter(event => event.correct);
+            const correctCount = correctEvents.length;
             const recentAccuracy = correctCount / recent.length;
-            const averageResponseTime = recent.reduce((sum, event) => sum + event.responseTime, 0) / recent.length;
+
+            // IMPORTANT: speed is only a positive signal when the answer was correct.
+            // Wrong answers do not receive a speed bonus, no matter how quickly they
+            // were submitted. If there are no recent correct answers, send a slow
+            // response-time value and zero efficiency.
+            const averageCorrectResponseTime = correctEvents.length
+                ? correctEvents.reduce((sum, event) => sum + event.responseTime, 0) / correctEvents.length
+                : 120;
+
+            const correctResponseEfficiency = correctEvents.length
+                ? correctEvents.reduce((sum, event) => {
+                    // Smooth 0..1 efficiency curve:
+                    // 0 sec -> 1.00, 12 sec -> ~0.71, 30 sec -> 0.50, 60 sec -> 0.33.
+                    const efficiency = 1 / (1 + Math.max(0, event.responseTime) / 30);
+                    return sum + efficiency;
+                }, 0) / correctEvents.length
+                : 0;
 
             const attemptsByStep = {};
             const recentStepKeys = [];
@@ -2962,7 +3899,8 @@
                 recent_accuracy: Number(recentAccuracy.toFixed(4)),
                 average_attempts: Number(averageAttempts.toFixed(4)),
                 hint_rate: Number(hintRate.toFixed(4)),
-                average_response_time: Number(averageResponseTime.toFixed(2)),
+                average_response_time: Number(averageCorrectResponseTime.toFixed(2)),
+                correct_response_efficiency: Number(correctResponseEfficiency.toFixed(4)),
                 consecutive_correct: consecutiveCorrect,
                 consecutive_wrong: consecutiveWrong
             };
@@ -2972,10 +3910,14 @@
             if (!mlTracker.currentStepKey) beginMLStep();
 
             mlTracker.currentStepAttempts += 1;
+            if (!isCorrect) mlTracker.currentStepWrongCount += 1;
+
             const event = {
                 correct: Boolean(isCorrect),
                 responseTime: getMLResponseTimeSeconds(),
                 attemptNumber: mlTracker.currentStepAttempts,
+                wrongCountThisStep: mlTracker.currentStepWrongCount,
+                hintCountThisStep: mlTracker.currentStepHintCount,
                 stepKey: mlTracker.currentStepKey,
                 reason,
                 at: Date.now()
@@ -2987,7 +3929,12 @@
             }
 
             restartMLAttemptTimer();
+
+            // Every meaningful submission triggers ML immediately, even when the
+            // learner is still working on the same step.
             void refreshLearningProfileFromML(reason);
+
+            return event;
         }
 
         function recordMLHintEvent() {
@@ -2999,39 +3946,66 @@
             void refreshLearningProfileFromML('hint');
         }
 
-        function applyMLProfilePrediction(predictedProfile, confidence) {
-            const allowedProfiles = ['struggling', 'average', 'outstanding'];
-            if (!allowedProfiles.includes(predictedProfile)) return;
+        const PROFILE_ORDER = ['struggling', 'average', 'outstanding'];
 
-            mlTracker.lastPrediction = predictedProfile;
+        function getStepwiseMLTarget(predictedProfile) {
+            const currentProfile = state.learningProfile || 'average';
+            const currentIndex = PROFILE_ORDER.indexOf(currentProfile);
+            const predictedIndex = PROFILE_ORDER.indexOf(predictedProfile);
+
+            if (currentIndex < 0 || predictedIndex < 0) return predictedProfile;
+
+            const maxStep = Math.max(1, Number(ML_PROFILE_CONFIG.maxProfileStepPerPrediction) || 1);
+            const difference = predictedIndex - currentIndex;
+
+            if (Math.abs(difference) <= maxStep) return predictedProfile;
+
+            const direction = difference > 0 ? 1 : -1;
+            return PROFILE_ORDER[currentIndex + (direction * maxStep)];
+        }
+
+        function applyMLProfilePrediction(predictedProfile, confidence) {
+            if (!PROFILE_ORDER.includes(predictedProfile)) return;
+
+            const rawPrediction = predictedProfile;
+            const targetProfile = getStepwiseMLTarget(rawPrediction);
+
+            mlTracker.lastPrediction = rawPrediction;
+            mlTracker.lastAppliedTarget = targetProfile;
             mlTracker.lastConfidence = Number.isFinite(confidence) ? confidence : null;
 
-            if (predictedProfile === state.learningProfile) {
+            if (targetProfile === state.learningProfile) {
                 mlTracker.candidateProfile = null;
                 mlTracker.candidateCount = 0;
-                updateMLDebugBadge('Prediction matches active profile');
+                updateMLDebugBadge('ML target matches active profile');
                 return;
             }
 
             const highConfidence = Number.isFinite(confidence)
                 && confidence >= ML_PROFILE_CONFIG.immediateSwitchConfidence;
 
-            if (mlTracker.candidateProfile === predictedProfile) {
+            if (mlTracker.candidateProfile === targetProfile) {
                 mlTracker.candidateCount += 1;
             } else {
-                mlTracker.candidateProfile = predictedProfile;
+                mlTracker.candidateProfile = targetProfile;
                 mlTracker.candidateCount = 1;
             }
 
             if (highConfidence || mlTracker.candidateCount >= ML_PROFILE_CONFIG.confirmationsRequired) {
                 const previousProfile = state.learningProfile;
-                state.learningProfile = predictedProfile;
+                state.learningProfile = targetProfile;
                 mlTracker.candidateProfile = null;
                 mlTracker.candidateCount = 0;
-                console.info(`[PIA ML] Active profile changed: ${previousProfile} -> ${predictedProfile}`);
-                updateMLDebugBadge(`Switched from ${previousProfile} to ${predictedProfile}`);
+
+                if (rawPrediction !== targetProfile) {
+                    console.info(`[PIA ML] Raw prediction ${rawPrediction} was limited to one profile step: ${previousProfile} -> ${targetProfile}`);
+                } else {
+                    console.info(`[PIA ML] Active profile changed: ${previousProfile} -> ${targetProfile}`);
+                }
+
+                updateMLDebugBadge(`Switched from ${previousProfile} to ${targetProfile}`);
             } else {
-                updateMLDebugBadge(`Waiting for another ${predictedProfile} prediction`);
+                updateMLDebugBadge(`Waiting for another ${targetProfile} prediction`);
             }
         }
 
@@ -3082,6 +4056,7 @@
                     reason,
                     activeProfile: state.learningProfile,
                     prediction: result.profile,
+                    appliedTarget: mlTracker.lastAppliedTarget,
                     confidence: result.confidence,
                     candidateProfile: mlTracker.candidateProfile,
                     candidateCount: mlTracker.candidateCount,
@@ -3141,6 +4116,7 @@
 
             state.learningProfile = 'average';
             resetMLTracker();
+            resetDialogueRotation();
             state.currentTopic = 'topic1';
             state.currentQuestionIndex = 0;
             state.currentStepIndex = 0;
@@ -3179,9 +4155,10 @@
         function speak(text, avatarState = 'default', speechColor = "#4A3E3D") {
             const box = document.getElementById('status-msg');
             const avatarImg = document.getElementById('avatar-img');
+            const safeText = sanitizeTutorText(text);
 
             if (box) {
-                box.innerText = text;
+                box.innerText = safeText;
                 box.style.color = speechColor;
 
                 box.classList.remove('speaking');
@@ -3316,7 +4293,7 @@
                 type: 'percentage',
                 label: 'Final Percentage',
                 prompt: 'Now write the final percentage.',
-                placeholder: 'e.g. 20%',
+                placeholder: 'e.g. 20 or 20%',
                 buttonLabel: 'Submit Conversion'
             };
         }
@@ -3354,7 +4331,7 @@
             raw = raw
                 .replace(/[×·]/g, '*')
                 .replace(/÷/g, '/')
-                .replace(/[−–—]/g, '-');
+                .replace(/−/g, '-');
 
             // Ignore one leading + or - because it may simply be the sign of a number.
             const withoutLeadingSign = raw.replace(/^[+-]\s*/, '');
@@ -3371,7 +4348,8 @@
             const req = getStepConfirmationRequirement(topicKey, stepIdx);
 
             if (req.type === 'percentage') {
-                return /^[+-]?(?:\d+(?:\.\d+)?|\.\d+)\s*%$/.test(raw);
+                // Accept either 20 or 20%. The % sign is optional.
+                return /^[+-]?(?:\d+(?:\.\d+)?|\.\d+)\s*%?$/.test(raw);
             }
 
             // Decimal conversion and ordinary arithmetic steps both require a final
@@ -3389,7 +4367,7 @@
                 .replace(/₱/g, '')
                 .replace(/[×·]/g, '*')
                 .replace(/÷/g, '/')
-                .replace(/[−–—]/g, '-')
+                .replace(/−/g, '-')
                 .replace(/%/g, '');
 
             // Treat x between numeric/parenthesized terms as multiplication.
@@ -3544,12 +4522,10 @@
             if (userAnsStr === '') return;
 
             const isCorrect = isCorrectMathValue(userAnsStr, step.answer);
-
-            // Every primary answer submission is a live ML event.
-            recordMLAnswerEvent(isCorrect, isCorrect ? 'correct-answer' : 'wrong-answer');
-
-            const trait = state.oceanTrait || 'neutral';
-            const activePersona = PERSONA_CONFIG[trait] || PERSONA_CONFIG.neutral;
+            const event = recordMLAnswerEvent(
+                isCorrect,
+                isCorrect ? 'correct-answer' : 'wrong-answer'
+            );
 
             if (isCorrect) {
                 const req = getStepConfirmationRequirement(state.currentTopic, stepIdx);
@@ -3557,9 +4533,8 @@
                 const alreadyFinal = !hasWorking && isAlreadyFinalAnswerFormat(state.currentTopic, stepIdx, userAnsStr);
 
                 // IMPORTANT: correct arithmetic working is NOT the final submitted answer.
-                // If any calculation/operator is present, keep this step open and reveal
-                // a second field. Example: "0.3 x 30" evaluates to 9, but the learner
-                // must still type "9" before Step 2 can be completed.
+                // It still counts as a correct learning interaction for ML, but the learner
+                // must explicitly write the final numeric value to complete the step.
                 if (hasWorking) {
                     state.currentConversionChecks[stepIdx] = {
                         stage: 'confirm',
@@ -3567,17 +4542,20 @@
                         confirmedValue: '',
                         directFinal: false
                     };
+
+                    const reaction = getPersonaReaction('correctWorkNeedsFinal', 'correct');
+                    mlTracker.lastReaction = 'correctWorkNeedsFinal';
+                    speak(`${reaction} ${req.prompt}`.trim(), 'happy', '#2E7D32');
+
                     stepWrongAttempts = 0;
                     currentHintTier = 0;
-
-                    speak(req.prompt, 'happy', '#2E7D32');
                     renderUI();
                     restartMLAttemptTimer();
+                    updateMLDebugBadge('Correct working; waiting for final value');
                     return;
                 }
 
                 // Only a final value written by itself completes the step immediately.
-                // Examples: 18, 0.3, .8, or 20% on a percentage-conversion step.
                 if (alreadyFinal) {
                     let normalizedFinalValue = userAnsStr;
 
@@ -3600,31 +4578,36 @@
                         directFinal: true
                     };
 
-                    completeCurrentStep(stepIdx, normalizedFinalValue, activePersona);
+                    const reactionType = chooseCorrectReaction(event);
+                    completeCurrentStep(stepIdx, normalizedFinalValue, reactionType);
                     return;
                 }
 
-                // A mathematically correct input that is not in the required final format
-                // must also be confirmed in the second field rather than completing.
+                // Mathematically correct but not in the required final format:
+                // keep the step open and ask for the exact final form.
                 state.currentConversionChecks[stepIdx] = {
                     stage: 'confirm',
                     expression: userAnsStr,
                     confirmedValue: '',
                     directFinal: false
                 };
+
+                const reaction = getPersonaReaction('correctWorkNeedsFinal', 'correct');
+                mlTracker.lastReaction = 'correctWorkNeedsFinal';
+                speak(`${reaction} ${req.prompt}`.trim(), 'happy', '#2E7D32');
+
                 stepWrongAttempts = 0;
                 currentHintTier = 0;
-
-                speak(req.prompt, 'happy', '#2E7D32');
                 renderUI();
                 restartMLAttemptTimer();
+                updateMLDebugBadge('Correct value; waiting for required final format');
                 return;
-            } else {
-                registerStepError(stepIdx, userAnsStr, feedbackEl, activePersona);
             }
+
+            registerStepError(stepIdx, userAnsStr, feedbackEl);
         }
 
-        function checkFinalAnswer(stepIdx) {
+        async function checkFinalAnswer(stepIdx) {
             const questions = questionBank[state.currentTopic] || [];
             const problem = questions[state.currentQuestionIndex];
             if (!problem) return;
@@ -3643,20 +4626,16 @@
             let userNum = null;
 
             if (req.type === 'percentage') {
-                formatIsCorrect = /^[+-]?(?:\d+(?:\.\d+)?|\.\d+)\s*%$/.test(userValue);
+                // Accept either 20 or 20%. Internally both are treated as the same percentage.
+                formatIsCorrect = /^[+-]?(?:\d+(?:\.\d+)?|\.\d+)\s*%?$/.test(userValue);
                 userNum = formatIsCorrect ? Number(userValue.replace('%', '').trim()) : null;
             } else {
-                // The confirmation field must contain the final numeric value only,
-                // not another arithmetic expression.
                 formatIsCorrect = isPlainNumericLiteral(userValue);
                 userNum = formatIsCorrect ? Number(userValue) : null;
             }
 
             const valueIsCorrect = formatIsCorrect && Number.isFinite(userNum) && targetNum !== null
                 && Math.abs(userNum - targetNum) <= 0.001;
-
-            const trait = state.oceanTrait || 'neutral';
-            const activePersona = PERSONA_CONFIG[trait] || PERSONA_CONFIG.neutral;
 
             if (valueIsCorrect) {
                 feedbackEl.className = 'feedback-msg correct';
@@ -3674,28 +4653,41 @@
                 }
 
                 state.currentConversionChecks[stepIdx] = confirmationState;
-                completeCurrentStep(stepIdx, confirmationState.expression || confirmationState.confirmedValue, activePersona);
+
+                // The mathematically correct working that opened this confirmation
+                // field was already counted by ML, so a correct confirmation is not
+                // double-counted. We still give a context-aware human reaction.
+                const reactionType = mlTracker.currentStepWrongCount > 0
+                    ? 'correctAfterStruggle'
+                    : 'correctFirstTry';
+
+                completeCurrentStep(
+                    stepIdx,
+                    confirmationState.expression || confirmationState.confirmedValue,
+                    reactionType
+                );
                 return;
             }
 
             stepWrongAttempts++;
             currentProblemErrors++;
 
-            // Wrong final confirmation is an additional meaningful attempt.
-            // Correct required confirmation is intentionally not double-counted.
+            // Wrong confirmation is a real additional attempt and updates the ML
+            // immediately while the learner remains on the same step.
             recordMLAnswerEvent(false, 'wrong-final-confirmation');
 
             feedbackEl.className = 'feedback-msg wrong';
 
             if (req.type === 'percentage') {
-                feedbackEl.innerText = 'Enter the final percentage with the % sign.';
+                feedbackEl.innerText = 'Enter the final percentage as a number, with or without the % sign.';
             } else if (req.type === 'decimal') {
                 feedbackEl.innerText = 'Enter the converted decimal value only.';
             } else {
                 feedbackEl.innerText = 'Enter the final numeric answer only, not the calculation.';
             }
 
-            speak(getPersonaMessage('wrong'), 'sad', '#C62828');
+            speakPersonaReaction('finalFormatError', 'sad', '#C62828', 'wrong');
+
             state.historyLog.push(`Step ${stepIdx + 1}: Final-answer error on "${userValue}"`);
             renderAttemptLog();
 
@@ -3706,7 +4698,7 @@
             }
         }
 
-        function registerStepError(stepIdx, userAnsStr, feedbackEl, activePersona) {
+        function registerStepError(stepIdx, userAnsStr, feedbackEl) {
             stepWrongAttempts++;
             currentProblemErrors++;
 
@@ -3715,7 +4707,9 @@
                 feedbackEl.innerText = 'Incorrect answer. Try again.';
             }
 
-            speak(getPersonaMessage('wrong'), 'sad', '#C62828');
+            const reactionType = chooseWrongReaction();
+            speakPersonaReaction(reactionType, 'sad', '#C62828', 'wrong');
+
             state.historyLog.push(`Step ${stepIdx + 1}: Error on "${userAnsStr}"`);
             renderAttemptLog();
 
@@ -3726,16 +4720,17 @@
             }
         }
 
-        function completeCurrentStep(stepIdx, recordedAnswer, activePersona) {
+        function completeCurrentStep(stepIdx, recordedAnswer, reactionType = 'correctFirstTry') {
             const questions = questionBank[state.currentTopic] || [];
             const problem = questions[state.currentQuestionIndex];
             if (!problem) return;
 
             state.currentStepsTaken[stepIdx] = recordedAnswer;
+
+            speakPersonaReaction(reactionType, 'happy', '#2E7D32', 'correct');
+
             stepWrongAttempts = 0;
             currentHintTier = 0;
-
-            speak(getPersonaMessage('correct'), 'happy', '#2E7D32');
 
             if (state.currentStepIndex + 1 < problem.steps.length) {
                 state.currentStepIndex++;
@@ -3763,8 +4758,6 @@
                 totalHintsUsedProblem
             );
 
-            // Evaluate upgrade/downgrade rules only after the whole question is completed.
-            // A question counts as accurate only when it was completed without any incorrect submissions.
             setTimeout(() => {
                 completeQuestionAndEvaluateAdaptiveRules();
             }, 650);
@@ -3785,7 +4778,7 @@
 
             totalHintsUsedProblem++;
             recordMLHintEvent();
-            
+
             let hintsArr = step.hints;
             if (!hintsArr || !Array.isArray(hintsArr) || hintsArr.length === 0) {
                 hintsArr = ["Review the step prompt and double-check your arithmetic."];
@@ -3796,11 +4789,11 @@
             }
 
             const activeHintText = hintsArr[currentHintTier - 1];
-            const trait = state.oceanTrait || 'neutral';
-            const activePersona = PERSONA_CONFIG[trait] || PERSONA_CONFIG.neutral;
-            const personaHintPrefix = getPersonaMessage('hint') || 'Here is a helpful tip:';
+            const personaHintPrefix = getPersonaReaction('hintRequested', 'hint') || 'Here is a helpful tip:';
+            mlTracker.lastReaction = 'hintRequested';
 
             speak(`${personaHintPrefix} ${activeHintText}`, 'thinking', '#D84315');
+            updateMLDebugBadge('Hint requested');
 
             document.getElementById('hint-tier-label').innerText = `(Tier ${currentHintTier}/${hintsArr.length})`;
         }
@@ -3908,8 +4901,6 @@
             const speechEl = document.getElementById('mastery-agent-speech');
             const avatarImgEl = document.getElementById('mastery-avatar-img');
             const destinationEl = document.getElementById('mastery-destination');
-            const cfg = adaptiveConfigs[state.currentTopic];
-            const progress = topicProgress[state.currentTopic];
 
             pendingAdaptiveAction = { type, targetTopic };
             pendingTopicChoice = targetTopic;
@@ -3920,21 +4911,14 @@
                     : (activePersona.images.thinking || activePersona.images.default);
             }
 
-            if (type === 'UPGRADE') {
-                const accuracy = Math.round(getTopicAccuracy(state.currentTopic));
-                if (speechEl) {
-                    speechEl.innerText = `You completed ${progress.completedQuestions} questions with ${accuracy}% accuracy, meeting the ${cfg.masteryThreshold}% mastery requirement. Would you like to continue to ${getTopicName(targetTopic)}?`;
-                }
-                if (destinationEl) {
-                    destinationEl.innerText = `Available progression: ${getTopicName(targetTopic)}`;
-                }
-            } else {
-                if (speechEl) {
-                    speechEl.innerText = `You reached ${progress.consecutiveFailedQuestions} consecutive unsuccessful questions. Would you like to return to ${getTopicName(targetTopic)} for review?`;
-                }
-                if (destinationEl) {
-                    destinationEl.innerText = `Recommended review: ${getTopicName(targetTopic)}`;
-                }
+            if (speechEl) {
+                speechEl.innerText = getAdaptivePersonaMessage(type, targetTopic);
+            }
+
+            if (destinationEl) {
+                destinationEl.innerText = type === 'UPGRADE'
+                    ? `Available progression: ${getTopicName(targetTopic)}`
+                    : `Recommended review: ${getTopicName(targetTopic)}`;
             }
 
             document.getElementById('completion-modal').style.display = 'flex';
@@ -4231,7 +5215,7 @@
             });
         }
 
-        console.log('PIA profile-dialogue foundation loaded — default profile: average');
+        console.log('PIA profile-dialogue foundation loaded ,  default profile: average');
         window.onload = initApp;
     </script>
 </body>
